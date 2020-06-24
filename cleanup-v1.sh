@@ -1,8 +1,12 @@
 #!/bin/bash
-set -e
+#set -e
 ##################################################################################################################
-# Author 	: 	Marco Obaid
-# GitHub    :   https://github.com/marcoobaid
+# Author 	: 	Erik Dubois
+# Website 	: 	https://www.erikdubois.be
+# Website	:	https://www.arcolinux.info
+# Website	:	https://www.arcolinux.com
+# Website	:	https://www.arcolinuxd.com
+# Website	:	https://www.arcolinuxforum.com
 ##################################################################################################################
 #
 #   DO NOT JUST RUN THIS. EXAMINE AND JUDGE. RUN AT YOUR OWN RISK.
@@ -10,7 +14,9 @@ set -e
 ##################################################################################################################
 # change into your name and email.
 
-sudo rm -rf ./out ./work
+sudo rm -r out/
+sudo rm -r work/
+
 
 echo "################################################################"
 echo "###################    T H E   E N D      ######################"

@@ -1,8 +1,12 @@
 #!/bin/bash
 set -e
 ##################################################################################################################
-# Author 	: 	Marco Obaid
-# GitHub    :   https://github.com/marcoobaid
+# Author 	: 	Erik Dubois
+# Website 	: 	https://www.erikdubois.be
+# Website	:	https://www.arcolinux.info
+# Website	:	https://www.arcolinux.com
+# Website	:	https://www.arcolinuxd.com
+# Website	:	https://www.arcolinuxforum.com
 ##################################################################################################################
 #
 #   DO NOT JUST RUN THIS. EXAMINE AND JUDGE. RUN AT YOUR OWN RISK.
@@ -11,8 +15,8 @@ set -e
 # change into your name and email.
 
 git init
-git config --global user.name "Marco Obaid"
-git config --global user.email "marco.obaid@gmail.com"
+git config --global user.name "Erik Dubois"
+git config --global user.email "erik.dubois@gmail.com"
 sudo git config --system core.editor nano
 git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=25000'

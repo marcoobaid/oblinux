@@ -1,18 +1,21 @@
 #!/bin/bash
+#oblinux
+sudo chown -R root airootfs/
+sudo chgrp -R root airootfs/
 
 set -e -u
 
-iso_name=archlinux
-iso_label="ARCH_$(date +%Y%m)"
-iso_publisher="Arch Linux <http://www.archlinux.org>"
-iso_application="Arch Linux Live/Rescue CD"
+iso_name=oblinux
+iso_label="OBLinux_$(date +%Y%m)"
+iso_publisher="OBLinux <https://github.com/marcoobaid/oblinux>"
+iso_application="OBLinux Live/Rescue CD"
 iso_version=$(date +%Y.%m.%d)
 install_dir=arch
 work_dir=work
 out_dir=out
 gpg_key=
 
-#OBLinux
+#oblinux
 verbose="-v"
 script_path=$(readlink -f ${0%/*})
 
