@@ -1,6 +1,6 @@
 # ArcoLinuxIso Carli-4
 
-Start building your own carli version with 
+Start building your own carli version with
 
 sudo ./build.sh
 
