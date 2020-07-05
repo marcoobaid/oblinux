@@ -1,4 +1,4 @@
-# OBlinux-4
+# OBLinux-4
 
 Start building your own oblinux version with
 
