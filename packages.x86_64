@@ -76,3 +76,10 @@ wpa_supplicant
 wvdial
 xfsprogs
 xl2tpd
+
+#oblinux
+plasma-meta
+kde-applications-meta
+packagekit-qt5
+sddm
+
