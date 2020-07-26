@@ -83,3 +83,5 @@ kde-applications-meta
 packagekit-qt5
 sddm
 calamares
+bash-completion
+partitionmanager
