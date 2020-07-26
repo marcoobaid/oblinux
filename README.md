@@ -1,4 +1,4 @@
-# OBLinux-5
+# OBLinux
 
 Start building your own oblinux version with
 
@@ -8,4 +8,4 @@ To be able to build you install this package
 
 sudo pacman -S archiso
 
-To do : next - change name Arch Linux to OBLinux
+To do : next - auto-load calamares and some branding
