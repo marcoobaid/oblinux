@@ -1,6 +1,6 @@
 # OBLinux
 
-Start building your own oblinux version with
+Start building your own oblinux version with:
 ```
 sudo ./build.sh
 ```
