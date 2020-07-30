@@ -77,13 +77,21 @@ wvdial
 xfsprogs
 xl2tpd
 
-#oblinux
+#OBLinux
 plasma-meta
 kde-applications-meta
 packagekit-qt5
 sddm
-calamares
-oblinux-calamares-config
 bash-completion
 partitionmanager
-grub
+
+#Calamares
+calamares
+oblinux-calamares-config
+
+#Software
+firefox
+git
+base-devel
+#we need a package build for the next one
+#yay-bin
