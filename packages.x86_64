@@ -86,3 +86,4 @@ calamares
 oblinux-calamares-config
 bash-completion
 partitionmanager
+grub
