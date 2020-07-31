@@ -84,6 +84,7 @@ packagekit-qt5
 sddm
 bash-completion
 partitionmanager
+grub
 
 #Calamares
 calamares
