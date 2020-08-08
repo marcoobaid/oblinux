@@ -109,8 +109,6 @@ calamares
 oblinux-calamares-config
 
 #Software
-firefox
 git
 base-devel
-#we need a package build for the next one
-#yay-bin
+yay-bin

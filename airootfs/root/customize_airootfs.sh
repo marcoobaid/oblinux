@@ -18,10 +18,26 @@ chmod 700 /root
 passwd -d root
 
 #oblinux
-systemctl enable pacman-init.service choose-mirror.service
+sed -i 's/#\(PermitRootLogin \).\+/\1yes/' /etc/ssh/sshd_config
+sed -i "s/#Server/Server/g" /etc/pacman.d/mirrorlist
+sed -i 's/#\(Storage=\)auto/\1volatile/' /etc/systemd/journald.conf
+
+sed -i 's/#\(HandleSuspendKey=\)suspend/\1ignore/' /etc/systemd/logind.conf
+sed -i 's/#\(HandleHibernateKey=\)hibernate/\1ignore/' /etc/systemd/logind.conf
+sed -i 's/#\(HandleLidSwitch=\)suspend/\1ignore/' /etc/systemd/logind.conf
+
+systemctl enable pacman-init.service choose-mirror.service systemd-networkd.service systemd-resolved.service
 systemctl set-default graphical.target
 systemctl enable sddm.service
 
-groupsoblinux="adm,audio,disk,floppy,log,network,optical,rfkill,storage,video,wheel,sys"
-useradd -m -g users -G $groupsoblinux -s /bin/bash liveuser
+pacman-key --init
+pacman-key --populate archlinux
+
+groupscarli="adm,audio,disk,floppy,log,network,optical,rfkill,storage,video,wheel,sys"
+useradd -m -g users -G $groupscarli -s /bin/bash liveuser
 passwd -d liveuser
+
+#set permissions
+chmod 750 /etc/sudoers.d
+chmod 750 /etc/polkit-1/rules.d
+chgrp polkitd /etc/polkit-1/rules.d
