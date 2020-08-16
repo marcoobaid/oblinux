@@ -96,9 +96,9 @@ xl2tpd
 zsh
 
 #OBLinux
-plasma-meta
-kde-applications-meta
-packagekit-qt5
+cinnamon
+nemo-fileroller
+gnome-terminal
 sddm
 bash-completion
 partitionmanager

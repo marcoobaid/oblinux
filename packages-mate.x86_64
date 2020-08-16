@@ -96,9 +96,8 @@ xl2tpd
 zsh
 
 #OBLinux
-plasma-meta
-kde-applications-meta
-packagekit-qt5
+mate
+mate-extra
 sddm
 bash-completion
 partitionmanager

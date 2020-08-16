@@ -96,9 +96,8 @@ xl2tpd
 zsh
 
 #OBLinux
-plasma-meta
-kde-applications-meta
-packagekit-qt5
+xfce4
+xfce4-goodies
 sddm
 bash-completion
 partitionmanager
