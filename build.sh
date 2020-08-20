@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-#oblinux
-#sudo chown -R root airootfs/
-#sudo chgrp -R root airootfs/
 
 set -e -u
+
+#oblinux
+sudo ./cleanup.sh
+sudo chown -R root airootfs/
+sudo chgrp -R root airootfs/
 
 iso_name=oblinux
 iso_label="OBLinux_$(date +%Y%m)"
@@ -112,7 +114,10 @@ make_packages() {
 
 # Customize installation (airootfs)
 make_customize_airootfs() {
-    if [[ -e "${script_path}/airootfs/etc/passwd" ]]; then
+#Oblinux to copy pacman.conf that contains distro repo
+    cp "${script_path}/pacman.conf" "${work_dir}/x86_64/airootfs/etc"
+########################################################################### 
+   if [[ -e "${script_path}/airootfs/etc/passwd" ]]; then
         while IFS=':' read -a passwd -r; do
             [[ "${passwd[5]}" == '/' ]] && continue
             cp -RdT --preserve=mode,timestamps,links -- "${work_dir}/x86_64/airootfs/etc/skel" "${work_dir}/x86_64/airootfs${passwd[5]}"
@@ -131,6 +136,13 @@ make_customize_airootfs() {
         fi
         rm "${work_dir}/x86_64/airootfs/root/customize_airootfs.sh"
     fi
+
+#OBlinux to set correct permissions
+
+    chmod 750 ${work_dir}/x86_64/airootfs/etc/sudoers.d
+    chmod 750 ${work_dir}/x86_64/airootfs/etc/polkit-1/rules.d
+    chgrp polkitd ${work_dir}/x86_64/airootfs/etc/polkit-1/rules.d
+#######################################################################
 }
 
 # Prepare kernel/initramfs ${install_dir}/boot/
