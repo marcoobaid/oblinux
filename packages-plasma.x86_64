@@ -97,7 +97,7 @@ zsh
 
 #OBLinux
 plasma-meta
-kde-applications-meta
+#kde-applications-meta
 packagekit-qt5
 sddm
 bash-completion
