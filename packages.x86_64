@@ -98,6 +98,9 @@ zsh
 #OBLinux
 plasma-meta
 #kde-applications-meta
+dolphin
+konsole
+kate
 packagekit-qt5
 sddm
 bash-completion
@@ -113,3 +116,4 @@ git
 base-devel
 yay-bin
 neofetch
+
