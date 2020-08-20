@@ -5,7 +5,7 @@
 set -e -u
 
 #oblinux
-sudo ./cleanup.sh
+sudo ./cleanup*
 sudo chown -R root airootfs/
 sudo chgrp -R root airootfs/
 
