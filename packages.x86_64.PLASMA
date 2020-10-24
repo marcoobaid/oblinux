@@ -20,7 +20,7 @@ dosfstools
 edk2-shell
 efibootmgr
 ethtool
-exfat-utils
+exfatprogs
 f2fs-tools
 fsarchiver
 gnu-netcat
@@ -96,10 +96,12 @@ xl2tpd
 zsh
 
 #OBLinux
-gnome
-dconf-editor
-gnome-tweaks
-guake
+plasma-meta
+#kde-applications-meta
+dolphin
+konsole
+kate
+packagekit-qt5
 sddm
 bash-completion
 partitionmanager
@@ -114,3 +116,4 @@ git
 base-devel
 yay-bin
 neofetch
+
