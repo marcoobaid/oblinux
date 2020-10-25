@@ -95,25 +95,28 @@ xfsprogs
 xl2tpd
 zsh
 
-#OBLinux
+#Carli
 plasma-meta
 #kde-applications-meta
-dolphin
-konsole
-kate
 packagekit-qt5
 sddm
 bash-completion
 partitionmanager
-grub
 
 #Calamares
 calamares
-oblinux-calamares-config
+carli-calamares-config
+carli-system-installation
+grub
+
+#carli
+carli-keyring
 
 #Software
 git
 base-devel
 yay-bin
 neofetch
-
+dolphin
+konsole
+kate
