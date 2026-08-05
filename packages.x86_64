@@ -155,3 +155,6 @@ networkmanager
 ## /usr/local/bin/oblinux-aur-bootstrap — base-devel/git are its build deps)
 base-devel
 git
+
+## OBLinux: boot splash (theme: airootfs/usr/share/plymouth/themes/oblinux)
+plymouth

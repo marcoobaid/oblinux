@@ -56,9 +56,29 @@ cleanly from favicon size up to a boot-splash centerpiece.
 | Logo mark | `docs/branding/oblinux-mark*.svg` | SVG source | **Done** — see above |
 | BIOS boot menu background | `syslinux/splash.png` | PNG, 640×480 | **Done** — mark + wordmark, Space Grotesk |
 | UEFI boot menu | uses same visual language via `efiboot/loader/entries/*.conf` titles (text only, systemd-boot has no background image) | — | Text branding done already |
-| Plymouth boot theme | new: `airootfs/usr/share/plymouth/themes/oblinux/` + `plymouth` package | `.plymouth` + script + images | Not started |
+| Plymouth boot theme | `airootfs/usr/share/plymouth/themes/oblinux/` + `plymouth` package | `.plymouth` + `.script` + 3 PNGs | **Done** — see below |
 | GDM login background | `airootfs/etc/dconf/db/gdm.d/` override | PNG or solid color via dconf | Not started |
 | OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/icons/hicolor/.../oblinux-logo.svg` | SVG icon, symbolic + full-color variants | Mark ready, needs export into a hicolor icon set |
+
+## Plymouth theme
+
+`airootfs/usr/share/plymouth/themes/oblinux/` — same composition as the boot
+splash (ring + wordmark on Ink), but animated: the amber spark orbits the
+ring continuously as a boot-activity indicator, instead of a generic
+throbber. Three transparent PNGs (`oblinux-ring.png`, `oblinux-spark.png`,
+`oblinux-wordmark.png`, all sourced with the same canvas pipeline as the
+boot splash) plus `oblinux.script` (Plymouth's scripting language —
+verified against upstream's own `themes/script` example rather than
+guessed, since the API isn't something we control) drive the animation.
+
+Wiring: `plymouth` package added; `/etc/plymouth/plymouthd.conf` sets
+`Theme=oblinux` (equivalent to running `plymouth-set-default-theme`, done as
+a static file since there's no build-time command-execution step anymore);
+`plymouth` hook added to `mkinitcpio.conf.d/archiso.conf` (placed after
+`kms`, per upstream's placement guidance); `quiet splash` added to the two
+main boot entries (BIOS + UEFI) — deliberately **not** added to the
+accessibility/speech boot entry, so screen-reader users still get console
+text.
 
 ## Boot splash typography
 
@@ -80,7 +100,6 @@ needing ImageMagick/cairosvg/etc. installed on this machine.
 
 1. ~~Logo/wordmark~~ — done, see above.
 2. ~~Boot splash~~ (`syslinux/splash.png`) — done, see above.
-3. **Plymouth theme** — a themed spinner/logo on the same background, shown
-   during kernel boot before GDM starts.
+3. ~~Plymouth theme~~ — done, see above.
 4. **GDM background** — same visual language for the login screen.
 5. **App icon / `LOGO` asset** — export the mark as a proper hicolor icon set.

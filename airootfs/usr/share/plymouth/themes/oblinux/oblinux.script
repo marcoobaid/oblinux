@@ -1,0 +1,44 @@
+# OBLinux Plymouth theme.
+#
+# Ink background, the OBLinux mark + wordmark centered, and the amber spark
+# orbiting the ring as a boot-activity indicator (reuses the same brand
+# shapes as syslinux/splash.png instead of a generic throbber).
+
+# Ink (#151a22) as 0..1 floats.
+Window.SetBackgroundTopColor(0.0824, 0.1020, 0.1333);
+Window.SetBackgroundBottomColor(0.0824, 0.1020, 0.1333);
+
+ring.image = Image("oblinux-ring.png");
+ring.sprite = Sprite(ring.image);
+wordmark.image = Image("oblinux-wordmark.png");
+wordmark.sprite = Sprite(wordmark.image);
+spark.image = Image("oblinux-spark.png");
+spark.sprite = Sprite(spark.image);
+
+center_x = Window.GetX() + Window.GetWidth() / 2;
+center_y = Window.GetY() + Window.GetHeight() / 2 - 60;
+
+ring.x = center_x - ring.image.GetWidth() / 2;
+ring.y = center_y - ring.image.GetHeight() / 2;
+ring.sprite.SetPosition(ring.x, ring.y, 0);
+
+wordmark.x = center_x - wordmark.image.GetWidth() / 2;
+wordmark.y = ring.y + ring.image.GetHeight() + 30;
+wordmark.sprite.SetPosition(wordmark.x, wordmark.y, 0);
+
+# The ring image is a 200x200 canvas with its circle centered at local
+# (100,100), radius 70 — matches docs/branding/oblinux-mark.svg.
+ring_center_x = ring.x + 100;
+ring_center_y = ring.y + 100;
+spark_radius = 70;
+spark_angle = 0;
+
+fun refresh_callback ()
+  {
+    spark_angle += 0.045;
+    spark.x = ring_center_x + spark_radius * Math.Cos(spark_angle) - spark.image.GetWidth() / 2;
+    spark.y = ring_center_y + spark_radius * Math.Sin(spark_angle) - spark.image.GetHeight() / 2;
+    spark.sprite.SetPosition(spark.x, spark.y, 1);
+  }
+
+Plymouth.SetRefreshFunction(refresh_callback);

@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=OBLinux
+Description=OBLinux boot theme: mark, wordmark, and an orbiting spark on Ink
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/oblinux
+ScriptFile=/usr/share/plymouth/themes/oblinux/oblinux.script

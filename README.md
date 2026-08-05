@@ -33,12 +33,14 @@ Phase 1, in progress — see issues/project board for tracking. Built so far:
       boot menu titles (BIOS + UEFI)
 - [x] AUR support via a first-login bootstrap that builds `paru` (see
       `airootfs/usr/local/bin/oblinux-aur-bootstrap`)
-- [x] **Visual branding, part 1** — logo mark (`docs/branding/oblinux-mark*.svg`) and boot splash
-      (`syslinux/splash.png`) done. Palette, mark rationale, and rendering method are documented in
+- [x] **Visual branding, part 1** — logo mark (`docs/branding/oblinux-mark*.svg`), boot splash
+      (`syslinux/splash.png`), and the Plymouth boot theme
+      (`airootfs/usr/share/plymouth/themes/oblinux/`, the amber spark orbits the ring during boot).
+      Palette, mark rationale, and asset details are documented in
       [`docs/BRANDING.md`](docs/BRANDING.md).
-- [ ] **Visual branding, part 2** — Plymouth boot theme, GDM login background, and an exported
-      hicolor icon set for `os-release`'s `LOGO=oblinux-logo` (still a generic fallback icon until
-      this is done). See the asset checklist in `docs/BRANDING.md`.
+- [ ] **Visual branding, part 2** — GDM login background and an exported hicolor icon set for
+      `os-release`'s `LOGO=oblinux-logo` (still a generic fallback icon until this is done). See the
+      asset checklist in `docs/BRANDING.md`.
 - [ ] Calamares installer + OBLinux branding module (next increment)
 - [ ] Default application package list (user-controlled — TBD)
 
