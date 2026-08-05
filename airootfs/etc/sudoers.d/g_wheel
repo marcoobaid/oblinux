@@ -1,0 +1,8 @@
+## OBLinux live session: passwordless sudo for the wheel group.
+## This is meant for the live/rescue environment (liveuser) only. Calamares
+## typically clones this live filesystem onto the target disk, so this file
+## WILL be present on freshly installed systems too unless the Calamares
+## config (added in a later increment) explicitly removes it as a post-
+## install step. TODO when wiring up Calamares: strip this file (or replace
+## it with a normal password-required rule) on the installed target.
+%wheel ALL=(ALL:ALL) NOPASSWD: ALL

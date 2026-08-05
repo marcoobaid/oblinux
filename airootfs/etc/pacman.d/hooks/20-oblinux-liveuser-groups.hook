@@ -1,0 +1,21 @@
+# remove from airootfs!
+#
+# airootfs/etc/{passwd,shadow} already define the liveuser account (per
+# archiso's documented method for provisioning users in a profile). Adding
+# it to supplementary groups still needs shadow-utils' usermod, which is
+# only available once the transaction that installs it has finished, so we
+# do this as a self-removing PostTransaction hook instead of a static
+# /etc/group overlay (which would risk clobbering the group entries other
+# packages create via systemd-sysusers during pacstrap).
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = shadow
+
+[Action]
+Description = Adding liveuser to wheel/audio/video/etc. groups...
+When = PostTransaction
+Depends = shadow
+Exec = /usr/bin/usermod -aG wheel,audio,video,storage,optical,network,power,rfkill liveuser

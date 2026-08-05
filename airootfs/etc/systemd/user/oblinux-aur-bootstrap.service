@@ -1,0 +1,14 @@
+# OBLinux: build/install paru on first graphical login. See
+# /usr/local/bin/oblinux-aur-bootstrap for details. Idempotent — safe to run
+# on every login, exits immediately once paru is present.
+
+[Unit]
+Description=OBLinux AUR helper (paru) bootstrap
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/oblinux-aur-bootstrap
+
+[Install]
+WantedBy=graphical-session.target

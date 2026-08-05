@@ -1,0 +1,11 @@
+Welcome to [38;2;23;147;209mOBLinux[0m — a GNOME desktop built on Arch Linux.
+
+For Wi-Fi, authenticate to the wireless network using the [35miwctl[0m utility.
+For mobile broadband (WWAN) modems, connect with the [35mmmcli[0m utility.
+Ethernet, WLAN and WWAN interfaces using DHCP should work automatically.
+
+To install OBLinux to disk, launch the installer from the desktop, or run:
+[35mcalamares[0m
+
+After connecting to the internet, the Arch installation guide can be
+accessed via the convenience script [35mInstallation_guide[0m.
