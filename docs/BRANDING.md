@@ -54,18 +54,32 @@ cleanly from favicon size up to a boot-splash centerpiece.
 | Asset | Path in repo | Format | Status |
 |---|---|---|---|
 | Logo mark | `docs/branding/oblinux-mark*.svg` | SVG source | **Done** — see above |
-| BIOS boot menu background | `syslinux/splash.png` | PNG, 640×480 (matches current upstream default) | Not started |
+| BIOS boot menu background | `syslinux/splash.png` | PNG, 640×480 | **Done** — mark + wordmark, Space Grotesk |
 | UEFI boot menu | uses same visual language via `efiboot/loader/entries/*.conf` titles (text only, systemd-boot has no background image) | — | Text branding done already |
 | Plymouth boot theme | new: `airootfs/usr/share/plymouth/themes/oblinux/` + `plymouth` package | `.plymouth` + script + images | Not started |
 | GDM login background | `airootfs/etc/dconf/db/gdm.d/` override | PNG or solid color via dconf | Not started |
 | OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/icons/hicolor/.../oblinux-logo.svg` | SVG icon, symbolic + full-color variants | Mark ready, needs export into a hicolor icon set |
 
+## Boot splash typography
+
+`syslinux/splash.png` uses **Space Grotesk** (700 weight for "OB", 500 for
+"Linux") — a geometric sans common in current tech/dev-tool branding, chosen
+to match the "modern, trendy" brief. Since the wordmark is baked into a
+static PNG at build-design time (not rendered on the built system), the font
+doesn't need to be installed on the ISO — only the pixels ship. Same font
+choice should carry over to the Plymouth theme and GDM background for
+consistency.
+
+Rendering method (for reuse on the next assets): an HTML page draws the mark
++ wordmark, served locally, then an in-page `<canvas>` (fixed pixel
+dimensions, unaffected by browser zoom/DPR) rasterizes it and POSTs the PNG
+bytes to a small local save endpoint — gives pixel-exact output without
+needing ImageMagick/cairosvg/etc. installed on this machine.
+
 ## Next steps
 
 1. ~~Logo/wordmark~~ — done, see above.
-2. **Boot splash** (`syslinux/splash.png`) — mark centered on a 640×480
-   Ink/Slate background. Needs a typography decision for the "OBLinux" text
-   next to/below the mark.
+2. ~~Boot splash~~ (`syslinux/splash.png`) — done, see above.
 3. **Plymouth theme** — a themed spinner/logo on the same background, shown
    during kernel boot before GDM starts.
 4. **GDM background** — same visual language for the login screen.
