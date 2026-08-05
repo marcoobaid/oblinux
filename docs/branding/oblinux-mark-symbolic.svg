@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img">
+  <title>OBLinux mark (symbolic)</title>
+  <desc>Single-color variant of the OBLinux mark for GNOME symbolic icon contexts (top bar, notifications), recolored by the shell theme via currentColor.</desc>
+  <path d="M160.6,135 A70,70 0 1 1 160.6,65" fill="none" stroke="currentColor" stroke-width="17" stroke-linecap="round"/>
+  <circle cx="170" cy="100" r="10" fill="currentColor"/>
+</svg>

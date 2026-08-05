@@ -33,27 +33,40 @@ dominant, matches the terminal mockup) or something lighter? I'd default to dark
 it's the more common choice for boot splashes/login screens and suits this palette,
 but flag if you want it flipped.
 
+## Logo mark — locked
+
+The OBLinux mark: a ring left deliberately open, with an amber spark escaping
+the gap. Primary blue ring, amber spark, no wordmark baked in (typography for
+a "OBLinux"/"Linux" lockup is a separate decision, needed for the boot splash).
+
+Source files:
+- [`oblinux-mark.svg`](branding/oblinux-mark.svg) — full color (Primary ring,
+  Amber spark), for dark surfaces (Ink/Slate)
+- [`oblinux-mark-symbolic.svg`](branding/oblinux-mark-symbolic.svg) —
+  single-color (`currentColor`), for GNOME symbolic icon contexts (top bar,
+  notifications) where the shell recolors the icon itself
+
+Both are 200×200 viewBox, ring centered with even margins, so they scale
+cleanly from favicon size up to a boot-splash centerpiece.
+
 ## Asset checklist (boot → login, phase 1 scope)
 
 | Asset | Path in repo | Format | Status |
 |---|---|---|---|
-| Logo / wordmark | `docs/branding/` (source), exported per-use below | SVG source | Not started |
-| BIOS boot menu background | `syslinux/splash.png` | PNG, 640×480 (matches current upstream default) | Stock Arch art — needs replacing |
+| Logo mark | `docs/branding/oblinux-mark*.svg` | SVG source | **Done** — see above |
+| BIOS boot menu background | `syslinux/splash.png` | PNG, 640×480 (matches current upstream default) | Not started |
 | UEFI boot menu | uses same visual language via `efiboot/loader/entries/*.conf` titles (text only, systemd-boot has no background image) | — | Text branding done already |
 | Plymouth boot theme | new: `airootfs/usr/share/plymouth/themes/oblinux/` + `plymouth` package | `.plymouth` + script + images | Not started |
 | GDM login background | `airootfs/etc/dconf/db/gdm.d/` override | PNG or solid color via dconf | Not started |
-| OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/icons/hicolor/.../oblinux-logo.svg` | SVG icon, symbolic + full-color variants | Not started — `os-release` already references this name |
+| OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/icons/hicolor/.../oblinux-logo.svg` | SVG icon, symbolic + full-color variants | Mark ready, needs export into a hicolor icon set |
 
 ## Next steps
 
-1. **Logo/wordmark** — I'll mock up 2–3 SVG options using Primary/Ink/Amber. This
-   unblocks everything else, since the boot splash, Plymouth theme, and GDM
-   background all reuse it.
-2. **Boot splash** (`syslinux/splash.png`) — apply the logo to a 640×480 Ink/Slate
-   background.
-3. **Plymouth theme** — a themed spinner/logo on the same background, shown during
-   kernel boot before GDM starts.
+1. ~~Logo/wordmark~~ — done, see above.
+2. **Boot splash** (`syslinux/splash.png`) — mark centered on a 640×480
+   Ink/Slate background. Needs a typography decision for the "OBLinux" text
+   next to/below the mark.
+3. **Plymouth theme** — a themed spinner/logo on the same background, shown
+   during kernel boot before GDM starts.
 4. **GDM background** — same visual language for the login screen.
 5. **App icon / `LOGO` asset** — export the mark as a proper hicolor icon set.
-
-Want me to go ahead and mock up logo/wordmark options now?
