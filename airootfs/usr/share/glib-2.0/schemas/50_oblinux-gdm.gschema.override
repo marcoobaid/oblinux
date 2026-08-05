@@ -1,0 +1,20 @@
+# OBLinux GDM/desktop branding overrides.
+#
+# Same mechanism Arch's own gdm package uses for the default Arch logo
+# (30_org.archlinux.gdm.gschema.override) — a GSettings schema override,
+# compiled by glib-compile-schemas via the pacman hook glib2 already ships
+# (usr/share/libalpm/hooks/glib-compile-schemas.hook). No custom build hook
+# needed; numbered higher than Arch's own override so ours wins.
+#
+# Note: overriding org.gnome.desktop.background changes that schema's
+# system-wide default, not just GDM's — real user accounts created later
+# (e.g. by Calamares) will also default to solid Ink until they set their
+# own wallpaper, same as how distros ship their own default wallpaper.
+
+[org.gnome.desktop.background]
+picture-options='none'
+primary-color='#151a22'
+color-shading-type='solid'
+
+[org.gnome.login-screen]
+logo='/usr/share/pixmaps/oblinux-logo.svg'

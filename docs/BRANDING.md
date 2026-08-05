@@ -57,8 +57,42 @@ cleanly from favicon size up to a boot-splash centerpiece.
 | BIOS boot menu background | `syslinux/splash.png` | PNG, 640×480 | **Done** — mark + wordmark, Space Grotesk |
 | UEFI boot menu | uses same visual language via `efiboot/loader/entries/*.conf` titles (text only, systemd-boot has no background image) | — | Text branding done already |
 | Plymouth boot theme | `airootfs/usr/share/plymouth/themes/oblinux/` + `plymouth` package | `.plymouth` + `.script` + 3 PNGs | **Done** — see below |
-| GDM login background | `airootfs/etc/dconf/db/gdm.d/` override | PNG or solid color via dconf | Not started |
+| GDM logo + background | `airootfs/usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override` | GSettings override + SVG | **Done** — see below |
 | OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/icons/hicolor/.../oblinux-logo.svg` | SVG icon, symbolic + full-color variants | Mark ready, needs export into a hicolor icon set |
+
+## GDM login screen
+
+Not what I originally assumed (a blurred desktop-background image) — Marco's
+Ubuntu screenshot pointed at the right mechanism: GDM's `org.gnome.login-screen`
+schema has a dedicated `logo` key ("small image ... to display branding"),
+rendered crisp (not blurred) in its own slot, separate from the desktop
+background. Verified against Arch's own `gdm` PKGBUILD, which sets this same
+key for the default Arch logo via a GSettings **schema override** file at
+`/usr/share/glib-2.0/schemas/30_org.archlinux.gdm.gschema.override` — not a
+dconf database at all. `glib2` already ships the pacman hook
+(`glib-compile-schemas.hook`) that recompiles the schema cache whenever any
+`*.gschema.override` file changes, so no custom build hook is needed; ours
+just has to sort after Arch's (`50_` vs `30_`) to win.
+
+Assets/wiring:
+- [`oblinux-lockup.svg`](branding/oblinux-lockup.svg) — the ring (vector) +
+  "OBLinux" wordmark (embedded as the same `oblinux-wordmark.png` used by the
+  boot splash/Plymouth, as a base64 raster `<image>`) side by side. The
+  wordmark had to be raster, not SVG `<text>`: this file is rendered live by
+  GDM on the built system, and Space Grotesk isn't installed there (not in
+  official Arch repos) — unlike the boot splash/Plymouth PNGs, which are
+  pre-rasterized during this design session and ship as plain pixels with no
+  font dependency at all.
+- Copied to `airootfs/usr/share/pixmaps/oblinux-logo.svg`, matching Arch's
+  own convention for this file's location.
+- `airootfs/usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override` sets
+  `org.gnome.login-screen`'s `logo` to that path, and separately sets
+  `org.gnome.desktop.background` to solid Ink (`primary-color='#151a22'`,
+  `picture-options='none'`) so the login (and default post-install desktop)
+  background matches Plymouth/the boot splash instead of GNOME's default
+  wallpaper. Note this changes the *system-wide* default background, not
+  just GDM's — real user accounts default to solid Ink until they set their
+  own wallpaper, same as how most distros ship a default wallpaper.
 
 ## Plymouth theme
 
@@ -101,5 +135,7 @@ needing ImageMagick/cairosvg/etc. installed on this machine.
 1. ~~Logo/wordmark~~ — done, see above.
 2. ~~Boot splash~~ (`syslinux/splash.png`) — done, see above.
 3. ~~Plymouth theme~~ — done, see above.
-4. **GDM background** — same visual language for the login screen.
+4. ~~GDM logo + background~~ — done, see above.
 5. **App icon / `LOGO` asset** — export the mark as a proper hicolor icon set.
+   This is the last item on the boot→login checklist; after this, phase 1
+   moves on to Calamares.
