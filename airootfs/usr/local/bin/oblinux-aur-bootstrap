@@ -5,9 +5,16 @@
 # /etc/systemd/user/oblinux-aur-bootstrap.service); idempotent, so it's a
 # harmless no-op on every login after the first successful run.
 #
-# Requires: base-devel, git (packages.x86_64) and passwordless sudo for the
-# invoking user's group (see /etc/sudoers.d/g_wheel) since it runs
-# non-interactively with no TTY for a password prompt.
+# Requires: base-devel, git, rust (packages.x86_64 — rust for cargo, paru's
+# own build dependency) and passwordless sudo for the invoking user's group
+# (see /etc/sudoers.d/g_wheel) since it runs non-interactively with no TTY
+# for a password prompt.
+#
+# The live ISO never runs an initial `pacman -Sy`, so the package db cache
+# is empty at first boot — makepkg can't resolve any dependency until
+# something syncs it. Hence the `pacman -Syu` below before touching AUR;
+# `-Syu` (not just `-Sy`) to avoid a partial upgrade, per pacman's own
+# guidance against installing new packages against a synced-but-stale db.
 
 set -euo pipefail
 
@@ -27,6 +34,8 @@ work_dir="$(mktemp -d)"
 trap 'rm -rf "$work_dir"' EXIT
 
 {
+    printf '[%s] Syncing package databases...\n' "$(date -Is)"
+    sudo pacman -Syu --noconfirm
     printf '[%s] Building paru from AUR...\n' "$(date -Is)"
     git clone --depth 1 https://aur.archlinux.org/paru.git "$work_dir/paru"
     cd "$work_dir/paru"
