@@ -22,7 +22,14 @@ that mattered.
 
 ## Status
 
-Phase 1, in progress — see issues/project board for tracking. Built so far:
+Phase 1, in progress — see issues/project board for tracking.
+
+**First successful build verified 2026-08-06**: built with `mkarchiso` on a physical Arch
+build machine, booted in VirtualBox (BIOS mode), reached a working GNOME desktop as
+`liveuser` with the mark visible at every stage (boot menu → Plymouth → GDM → About panel).
+Two minor cosmetic items found, nothing blocking. Full log: [`docs/TESTING.md`](docs/TESTING.md).
+
+Built so far:
 
 - [x] Base profile scaffolded from archiso's current `releng` example (BIOS/syslinux +
       UEFI/systemd-boot, current package set)
