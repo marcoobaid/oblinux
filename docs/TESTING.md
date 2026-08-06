@@ -67,8 +67,6 @@ list, with screenshots + `aur-bootstrap.log` output.
   doesn't add much for a GNOME desktop distro where the terminal is
   secondary, and fighting its prompt-override hooks wasn't worth it.
 
-Not yet re-verified with a fresh build — pending the next `mkarchiso` run.
-
 ### Deferred
 
 - **UEFI boot**: menu (systemd-boot) renders and lists entries correctly,
@@ -77,3 +75,45 @@ Not yet re-verified with a fresh build — pending the next `mkarchiso` run.
   UEFI/graphics-handoff quirk rather than an OBLinux bug — deferred pending
   a real-hardware USB boot test.
 - Accessibility/speech boot entry (BIOS) — not yet tested.
+
+## 2026-08-06 — round 3: rebuilt ISO, `no space left on device` (VirtualBox, BIOS)
+
+After the round-2 fixes, Marco rebuilt and immediately hit `write error: no
+space left on device` errors in the terminal, `sudo pacman -S nano` failing
+with `error: Partition / too full: 3443 blocks needed, 0 blocks free`, and
+`paru` still missing.
+
+### Bug found and fixed
+
+`df -h` showed the smoking gun:
+```
+cowspace       256M  256M     0 100% /run/archiso/cowspace
+airootfs       256M  256M     0 100% /
+```
+The live session's entire writable overlay was capped at 256MB and full —
+explaining all three symptoms at once (nothing could write: not `nano`'s
+install, not zsh's completion cache, not `paru`'s build).
+
+**My first theory was wrong and worth recording as a correction**: I
+initially assumed this meant the VM had too little RAM (archiso's cowspace
+is tmpfs-backed, and I assumed a RAM-percentage default). Marco correctly
+pushed back — the VM's RAM was 4096MB, unchanged from the first successful
+round. Checking archiso's actual source (`mkinitcpio-archiso`'s `hooks/archiso`)
+rather than continuing to guess turned up the real cause:
+```bash
+cow_spacesize="$(getarg 'cow_spacesize' '256M')"
+```
+`cow_spacesize` is a **hardcoded 256M default**, completely unrelated to
+RAM, unless a distro's own boot config explicitly overrides it with
+`cow_spacesize=` on the kernel command line. We never did — a real gap in
+our own `syslinux`/`efiboot` configs, not a VM setting.
+
+**Fix**: added `cow_spacesize=75%` (adapts to whatever RAM is actually
+available) to all four live-boot kernel command lines — BIOS main + speech
+(`syslinux/archiso_sys-linux.cfg`), UEFI main + speech
+(`efiboot/loader/entries/0{1,2}-archiso-*.conf`). PXE entries left alone
+(not something we're testing). This should also resolve the `paru` build
+failure, which was almost certainly the same disk-space exhaustion, not a
+logic bug in the bootstrap script itself.
+
+Not yet re-verified with a fresh build.
