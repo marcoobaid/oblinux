@@ -58,7 +58,7 @@ cleanly from favicon size up to a boot-splash centerpiece.
 | UEFI boot menu | uses same visual language via `efiboot/loader/entries/*.conf` titles (text only, systemd-boot has no background image) | — | Text branding done already |
 | Plymouth boot theme | `airootfs/usr/share/plymouth/themes/oblinux/` + `plymouth` package | `.plymouth` + `.script` + 3 PNGs | **Done** — see below |
 | GDM logo + background | `airootfs/usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override` | GSettings override + SVG | **Done** — see below |
-| OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/icons/hicolor/.../oblinux-logo.svg` | SVG icon, symbolic + full-color variants | Mark ready, needs export into a hicolor icon set |
+| OS logo (About panel, `LOGO=oblinux-logo` in os-release) | `airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}` | SVG + PNG, plain mark | **Done** — see below |
 
 ## GDM login screen
 
@@ -83,8 +83,9 @@ Assets/wiring:
   official Arch repos) — unlike the boot splash/Plymouth PNGs, which are
   pre-rasterized during this design session and ship as plain pixels with no
   font dependency at all.
-- Copied to `airootfs/usr/share/pixmaps/oblinux-logo.svg`, matching Arch's
-  own convention for this file's location.
+- Copied to `airootfs/usr/share/pixmaps/oblinux-logo-text-dark.svg` — named
+  to match Arch's own `archlinux-logo-text-dark.svg` (see the os-release
+  section below for why this couldn't just be `oblinux-logo.svg`).
 - `airootfs/usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override` sets
   `org.gnome.login-screen`'s `logo` to that path, and separately sets
   `org.gnome.desktop.background` to solid Ink (`primary-color='#151a22'`,
@@ -93,6 +94,36 @@ Assets/wiring:
   wallpaper. Note this changes the *system-wide* default background, not
   just GDM's — real user accounts default to solid Ink until they set their
   own wallpaper, same as how most distros ship a default wallpaper.
+
+## os-release LOGO (About panel)
+
+`airootfs/etc/os-release` has set `LOGO=oblinux-logo` since the very first
+scaffold commit, but no file with that name existed until now — GNOME
+Settings' About panel (and anything else reading `LOGO=`, which the
+os-release spec defines as a freedesktop icon-theme name) fell back to a
+generic icon.
+
+Checked how Arch itself ships this (`filesystem` package's PKGBUILD) rather
+than assume: it installs plain, wordmark-free logo files straight into
+`/usr/share/pixmaps/` — **not** the hicolor icon-theme directory tree I'd
+originally planned — as `archlinux-logo.{svg,png}`, and its own `os-release`
+sets `LOGO=archlinux-logo` to match. `/usr/share/pixmaps/` is itself part of
+the freedesktop icon lookup spec (an unthemed fallback location every
+icon-consuming app checks), so this needs no icon-cache rebuild at all,
+unlike the hicolor route. Arch keeps this plain-mark file separate from its
+GDM lockup (`archlinux-logo-text-dark.svg`, mark+wordmark) — same split we
+now follow:
+
+- `airootfs/usr/share/pixmaps/oblinux-logo.svg` / `.png` (256×256) — plain
+  mark only, copied straight from `docs/branding/oblinux-mark.svg`, matching
+  `LOGO=oblinux-logo` exactly.
+- `airootfs/usr/share/pixmaps/oblinux-logo-text-dark.svg` — the mark+wordmark
+  lockup, used only by GDM's `logo` key (see above).
+
+This is why the GDM lockup file got renamed instead of staying at
+`oblinux-logo.svg` — that name was needed for the plain mark once the real
+`os-release`/Arch convention was checked, so the two assets couldn't share
+it.
 
 ## Plymouth theme
 
@@ -136,6 +167,6 @@ needing ImageMagick/cairosvg/etc. installed on this machine.
 2. ~~Boot splash~~ (`syslinux/splash.png`) — done, see above.
 3. ~~Plymouth theme~~ — done, see above.
 4. ~~GDM logo + background~~ — done, see above.
-5. **App icon / `LOGO` asset** — export the mark as a proper hicolor icon set.
-   This is the last item on the boot→login checklist; after this, phase 1
-   moves on to Calamares.
+5. ~~os-release `LOGO` asset~~ — done, see above.
+
+That's the full boot→login checklist. Phase 1 moves on to Calamares next.

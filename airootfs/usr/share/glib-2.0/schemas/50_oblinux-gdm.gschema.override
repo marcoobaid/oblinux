@@ -17,4 +17,4 @@ primary-color='#151a22'
 color-shading-type='solid'
 
 [org.gnome.login-screen]
-logo='/usr/share/pixmaps/oblinux-logo.svg'
+logo='/usr/share/pixmaps/oblinux-logo-text-dark.svg'

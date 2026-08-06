@@ -33,14 +33,14 @@ Phase 1, in progress — see issues/project board for tracking. Built so far:
       boot menu titles (BIOS + UEFI)
 - [x] AUR support via a first-login bootstrap that builds `paru` (see
       `airootfs/usr/local/bin/oblinux-aur-bootstrap`)
-- [x] **Visual branding** — logo mark (`docs/branding/oblinux-mark*.svg`), boot splash
-      (`syslinux/splash.png`), Plymouth boot theme (`airootfs/usr/share/plymouth/themes/oblinux/`,
-      the amber spark orbits the ring during boot), and the GDM login logo + solid-Ink background
-      (`airootfs/usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override`). Palette, mark
-      rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [ ] App icon — export the mark into a proper hicolor icon set for `os-release`'s
-      `LOGO=oblinux-logo` (still a generic fallback icon until this is done — last item on the
-      boot→login checklist)
+- [x] **Visual branding, boot→login checklist complete** — logo mark
+      (`docs/branding/oblinux-mark*.svg`), boot splash (`syslinux/splash.png`), Plymouth boot theme
+      (`airootfs/usr/share/plymouth/themes/oblinux/`, the amber spark orbits the ring during boot),
+      GDM login logo + solid-Ink background
+      (`airootfs/usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override`), and the
+      `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
+      GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
+      mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
 - [ ] Calamares installer + OBLinux branding module (next increment)
 - [ ] Default application package list (user-controlled — TBD)
 
@@ -50,7 +50,5 @@ Phase 1, in progress — see issues/project board for tracking. Built so far:
   Calamares typically clones this live filesystem onto the install target, so **when the Calamares
   config is added, it must explicitly strip or replace that sudoers rule as a post-install step** —
   otherwise it ships on real installs too.
-- `/etc/os-release` sets `LOGO=oblinux-logo`, but no icon asset with that name exists yet — GNOME's
-  About panel will fall back to a generic icon until one is added.
 - Package list intentionally does *not* yet include a curated set of end-user apps — that list is
   still TBD and will be added as its own increment.
