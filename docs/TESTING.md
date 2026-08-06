@@ -116,4 +116,33 @@ available) to all four live-boot kernel command lines — BIOS main + speech
 failure, which was almost certainly the same disk-space exhaustion, not a
 logic bug in the bootstrap script itself.
 
-Not yet re-verified with a fresh build.
+## 2026-08-06 — round 4: cow_spacesize fix verified (VirtualBox, BIOS)
+
+Rebuilt with the `cow_spacesize=75%` fix and rebooted. Clean across the
+board:
+
+| Stage | Evidence | Result |
+|---|---|---|
+| Overlay space | `df -h` | `cowspace`/`airootfs` now 5.8G, 4% used — scales with RAM instead of a fixed 256M |
+| No more write errors | Terminal | No `no space left on device` errors |
+| zsh prompt | Terminal | Custom `oblinux:~%` prompt confirmed working |
+| AUR bootstrap | Desktop notification screenshot | `paru is ready — you can now install AUR packages` fired ~5 minutes after login |
+
+**On the ~5 minute delay before the paru notification**: expected, not a
+bug. `oblinux-aur-bootstrap.service` (systemd `--user`, triggered on
+`graphical-session.target`) runs automatically at first login: sync repos →
+clone paru from the AUR → `makepkg -si` (a real Rust compile, hence the
+wait) → notify on completion. One-time cost — the script exits immediately
+on every login after `paru` exists. This is the direct tradeoff of choosing
+"first-run bootstrap" over "prebuilt binary repo" earlier in the project;
+the latter would remove the wait at the cost of build/hosting
+infrastructure we deliberately deferred.
+
+Branding (boot menu, Plymouth, GDM, About panel) reconfirmed working after
+the rebuild too.
+
+### Still open
+
+- UEFI boot (black screen) — not yet tested on real hardware
+- UEFI speech entry branding ("Arch Linux" text)
+- Boot menu splash scale/position at non-640×480 resolutions

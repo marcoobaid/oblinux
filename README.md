@@ -24,10 +24,14 @@ that mattered.
 
 Phase 1, in progress — see issues/project board for tracking.
 
-**First successful build verified 2026-08-06**: built with `mkarchiso` on a physical Arch
-build machine, booted in VirtualBox (BIOS mode), reached a working GNOME desktop as
-`liveuser` with the mark visible at every stage (boot menu → Plymouth → GDM → About panel).
-Two minor cosmetic items found, nothing blocking. Full log: [`docs/TESTING.md`](docs/TESTING.md).
+**Verified working end to end (BIOS) as of 2026-08-06**, across 4 rounds of build → boot →
+fix on real VirtualBox testing: boot menu, Plymouth, GDM, GNOME desktop, `liveuser`
+autologin, NetworkManager, passwordless sudo, the zsh prompt, and the AUR bootstrap (`paru`
+builds successfully on first login) are all confirmed working. Three real bugs were found
+and fixed along the way (AUR bootstrap dependency resolution, zsh prompt override, and a
+live-session disk space cap) — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md).
+UEFI boot is still unverified (works in the boot menu, black-screens after — suspected
+VirtualBox quirk, pending a real-hardware test).
 
 Built so far:
 
