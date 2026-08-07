@@ -174,5 +174,13 @@ are now fully verified.**
   (y=12–137) so it sits entirely clear of the box. Not yet re-verified with
   a fresh build/boot — pending next test round.
 
-Nothing outstanding on the boot→login checklist after this. Next up:
-Calamares.
+## 2026-08-06 — round 6: cosmetics verified (VirtualBox, BIOS)
+
+Rebuilt and rebooted. Screenshot confirms the boot menu splash fix: the
+mark + wordmark now sit cleanly above the menu box with clear separation,
+no overlap. All prior functional confirmations (round 4/5) held.
+
+**Nothing outstanding on the boot→login checklist.** Every item — logo
+mark, boot splash, Plymouth theme, GDM logo/background, os-release icon,
+BIOS + UEFI boot (both modes, both main + speech entries) — is built,
+verified, and documented. Next up: Calamares.
