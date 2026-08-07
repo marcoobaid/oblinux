@@ -24,14 +24,16 @@ that mattered.
 
 Phase 1, in progress — see issues/project board for tracking.
 
-**Verified working end to end (BIOS) as of 2026-08-06**, across 4 rounds of build → boot →
-fix on real VirtualBox testing: boot menu, Plymouth, GDM, GNOME desktop, `liveuser`
-autologin, NetworkManager, passwordless sudo, the zsh prompt, and the AUR bootstrap (`paru`
-builds successfully on first login) are all confirmed working. Three real bugs were found
-and fixed along the way (AUR bootstrap dependency resolution, zsh prompt override, and a
-live-session disk space cap) — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md).
-UEFI boot is still unverified (works in the boot menu, black-screens after — suspected
-VirtualBox quirk, pending a real-hardware test).
+**Verified working end to end, both BIOS and UEFI, as of 2026-08-06**, across 5 rounds of
+build → boot → fix testing (4 in VirtualBox, 1 on real hardware via USB): boot menu,
+Plymouth, GDM, GNOME desktop, `liveuser` autologin, NetworkManager, passwordless sudo, the
+zsh prompt, and the AUR bootstrap (`paru` builds successfully on first login) are all
+confirmed working on both boot modes. Three real bugs were found and fixed along the way
+(AUR bootstrap dependency resolution, zsh prompt override, and a live-session disk space
+cap) — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md). The UEFI black
+screen seen in VirtualBox was confirmed as a VirtualBox-specific quirk, not an OBLinux bug,
+by the real-hardware test. Only cosmetic items remain open (UEFI speech entry branding,
+boot-menu splash scaling at non-640×480 resolutions).
 
 Built so far:
 

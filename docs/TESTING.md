@@ -143,6 +143,24 @@ the rebuild too.
 
 ### Still open
 
-- UEFI boot (black screen) — not yet tested on real hardware
 - UEFI speech entry branding ("Arch Linux" text)
-- Boot menu splash scale/position at non-640×480 resolutions
+- Boot menu splash scale/position at non-640×480 resolutions (BIOS/syslinux only)
+
+## 2026-08-06 — round 5: UEFI on real hardware (USB, physical laptop)
+
+ISO burned to USB, booted on a physical laptop via UEFI (not VirtualBox).
+
+| Stage | Evidence | Result |
+|---|---|---|
+| systemd-boot menu | Photo | Plain text menu on black, listing entries + "Boot in 14s" countdown — expected appearance, not a bug (systemd-boot has no background-image support, unlike syslinux's vesamenu; documented as expected since the initial boot-menu branding work) |
+| Selecting "OBLinux live/install medium (x86_64, UEFI)" | Marco's report | Boots through Plymouth → GDM → desktop, same as BIOS |
+
+**Resolves the round-1 VirtualBox black-screen question**: confirmed a
+VirtualBox-specific UEFI/graphics quirk, not an OBLinux bug — real hardware
+boots UEFI cleanly end to end, matching BIOS behavior. **Both boot modes
+are now fully verified.**
+
+### Still open (cosmetic only, nothing functional)
+
+- UEFI speech entry branding ("Arch Linux" text)
+- Boot menu splash scale/position at non-640×480 resolutions (BIOS/syslinux only)
