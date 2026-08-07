@@ -28,10 +28,9 @@ as a general highlight color) or it stops meaning anything.
 | Action / alert         | Amber `#d68a3c`       | Install button, warnings, active progress indicator |
 | Light background/text  | Cloud `#f2f3f5`       | Light-mode surfaces, text on dark backgrounds |
 
-Open question for you: do we want a **dark boot-to-login experience** (Ink/Slate
-dominant, matches the terminal mockup) or something lighter? I'd default to dark —
-it's the more common choice for boot splashes/login screens and suits this palette,
-but flag if you want it flipped.
+**Decision: dark boot-to-login experience** (Ink/Slate dominant, matches the terminal
+mockup) — the more common choice for boot splashes/login screens, and a good fit for
+this palette.
 
 ## Logo mark — locked
 
@@ -62,8 +61,8 @@ cleanly from favicon size up to a boot-splash centerpiece.
 
 ## GDM login screen
 
-Not what I originally assumed (a blurred desktop-background image) — Marco's
-Ubuntu screenshot pointed at the right mechanism: GDM's `org.gnome.login-screen`
+Not the mechanism originally assumed (a blurred desktop-background image) — a
+reference screenshot of Ubuntu's login screen pointed at the right mechanism: GDM's `org.gnome.login-screen`
 schema has a dedicated `logo` key ("small image ... to display branding"),
 rendered crisp (not blurred) in its own slot, separate from the desktop
 background. Verified against Arch's own `gdm` PKGBUILD, which sets this same
@@ -71,8 +70,8 @@ key for the default Arch logo via a GSettings **schema override** file at
 `/usr/share/glib-2.0/schemas/30_org.archlinux.gdm.gschema.override` — not a
 dconf database at all. `glib2` already ships the pacman hook
 (`glib-compile-schemas.hook`) that recompiles the schema cache whenever any
-`*.gschema.override` file changes, so no custom build hook is needed; ours
-just has to sort after Arch's (`50_` vs `30_`) to win.
+`*.gschema.override` file changes, so no custom build hook is needed; the
+OBLinux override just has to sort after Arch's (`50_` vs `30_`) to win.
 
 Assets/wiring:
 - [`oblinux-lockup.svg`](branding/oblinux-lockup.svg) — the ring (vector) +
@@ -105,14 +104,14 @@ generic icon.
 
 Checked how Arch itself ships this (`filesystem` package's PKGBUILD) rather
 than assume: it installs plain, wordmark-free logo files straight into
-`/usr/share/pixmaps/` — **not** the hicolor icon-theme directory tree I'd
+`/usr/share/pixmaps/` — **not** the hicolor icon-theme directory tree
 originally planned — as `archlinux-logo.{svg,png}`, and its own `os-release`
 sets `LOGO=archlinux-logo` to match. `/usr/share/pixmaps/` is itself part of
 the freedesktop icon lookup spec (an unthemed fallback location every
 icon-consuming app checks), so this needs no icon-cache rebuild at all,
 unlike the hicolor route. Arch keeps this plain-mark file separate from its
-GDM lockup (`archlinux-logo-text-dark.svg`, mark+wordmark) — same split we
-now follow:
+GDM lockup (`archlinux-logo-text-dark.svg`, mark+wordmark) — same split
+followed here:
 
 - `airootfs/usr/share/pixmaps/oblinux-logo.svg` / `.png` (256×256) — plain
   mark only, copied straight from `docs/branding/oblinux-mark.svg`, matching
@@ -134,7 +133,7 @@ throbber. Three transparent PNGs (`oblinux-ring.png`, `oblinux-spark.png`,
 `oblinux-wordmark.png`, all sourced with the same canvas pipeline as the
 boot splash) plus `oblinux.script` (Plymouth's scripting language —
 verified against upstream's own `themes/script` example rather than
-guessed, since the API isn't something we control) drive the animation.
+guessed, since the API is defined upstream, not within project control) drive the animation.
 
 Wiring: `plymouth` package added; `/etc/plymouth/plymouthd.conf` sets
 `Theme=oblinux` (equivalent to running `plymouth-set-default-theme`, done as
@@ -165,7 +164,7 @@ needing ImageMagick/cairosvg/etc. installed on this machine.
 around y=115–280, wordmark below it down to y≈345) visually clashed with
 vesamenu's menu box, which — per `syslinux`'s own docs — renders starting
 around `MENU VSHIFT 10` (≈ row 10 of 28, ~y=171px), a value inherited
-unchanged from upstream's `archiso_head.cfg`. The lower half of our original
+unchanged from upstream's `archiso_head.cfg`. The lower half of the original
 composition sat inside the box's territory. Re-rendered smaller (80px icon,
 26px wordmark) and anchored to the top of the frame (y=12–137) so the whole
 thing sits entirely above y=171, clear of the box, instead of overlapping

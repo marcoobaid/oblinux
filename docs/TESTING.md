@@ -11,7 +11,7 @@ below by boot stage.
 
 | Stage | Evidence | Result |
 |---|---|---|
-| BIOS boot menu | Screenshot of syslinux menu | "OBLinux" title, correct menu entries (live/install, speech, boot existing OS, Memtest86+, HDT, reboot, power off), our ring mark visible in the background |
+| BIOS boot menu | Screenshot of syslinux menu | "OBLinux" title, correct menu entries (live/install, speech, boot existing OS, Memtest86+, HDT, reboot, power off), the ring mark visible in the background |
 | Plymouth | Screenshot mid-boot | Ring + wordmark rendered on Ink background, spark visibly off-center (mid-orbit) — confirms the animation is actually running, not a static frame |
 | GDM → desktop handoff | Screenshot of GNOME Shell overview | Reaches a working GNOME Shell session (search bar, dock with Files + Show Apps) — no crash/fallback to a black screen or text console |
 | liveuser autologin | Terminal screenshot, prompt `liveuser@oblinux ~ %` | GDM auto-logged into `liveuser` (not root) as designed; zsh is the shell, matching `/etc/passwd` |
@@ -33,8 +33,8 @@ below by boot stage.
 
 ## 2026-08-06 — round 2: sudo/network/AUR/zsh (VirtualBox, BIOS)
 
-Marco checked items 1–4 and 6 from the previous round's "not yet tested"
-list, with screenshots + `aur-bootstrap.log` output.
+Items 1–4 and 6 from the previous round's "not yet tested" list were
+checked, with screenshots and `aur-bootstrap.log` output as evidence.
 
 ### Confirmed working
 
@@ -42,7 +42,7 @@ list, with screenshots + `aur-bootstrap.log` output.
 |---|---|---|
 | NetworkManager | Settings → Network screenshot | "Wired — Connected — 1000 Mb/s" |
 | Passwordless sudo | Terminal screenshot | `sudo pacman -Syyu` ran straight to syncing, no password prompt |
-| `~/.zshrc` deployed | `cat ~/.zshrc` output | File present with exactly the content we wrote |
+| `~/.zshrc` deployed | `cat ~/.zshrc` output | File present with exactly the expected content |
 
 ### Bugs found and fixed (commit follows)
 
@@ -61,7 +61,7 @@ list, with screenshots + `aur-bootstrap.log` output.
   live session.
 - **zsh prompt root cause confirmed**: `~/.zshrc` was present and correct,
   but `grml-zsh-config`'s own prompt system recalculates `PS1` dynamically
-  before every prompt render, silently overriding our static `PS1=` line
+  before every prompt render, silently overriding the static `PS1=` line
   regardless of file-sourcing order. **Fix**: removed `grml-zsh-config`
   from `packages.x86_64` — it's a text-console rescue-shell toolkit that
   doesn't add much for a GNOME desktop distro where the terminal is
@@ -78,7 +78,7 @@ list, with screenshots + `aur-bootstrap.log` output.
 
 ## 2026-08-06 — round 3: rebuilt ISO, `no space left on device` (VirtualBox, BIOS)
 
-After the round-2 fixes, Marco rebuilt and immediately hit `write error: no
+After the round-2 fixes, a rebuild immediately hit `write error: no
 space left on device` errors in the terminal, `sudo pacman -S nano` failing
 with `error: Partition / too full: 3443 blocks needed, 0 blocks free`, and
 `paru` still missing.
@@ -94,25 +94,25 @@ The live session's entire writable overlay was capped at 256MB and full —
 explaining all three symptoms at once (nothing could write: not `nano`'s
 install, not zsh's completion cache, not `paru`'s build).
 
-**My first theory was wrong and worth recording as a correction**: I
-initially assumed this meant the VM had too little RAM (archiso's cowspace
-is tmpfs-backed, and I assumed a RAM-percentage default). Marco correctly
-pushed back — the VM's RAM was 4096MB, unchanged from the first successful
-round. Checking archiso's actual source (`mkinitcpio-archiso`'s `hooks/archiso`)
+**Initial theory was incorrect — recorded as a correction**: the first
+hypothesis assumed insufficient VM RAM (archiso's cowspace is tmpfs-backed,
+assumed to default to a RAM percentage). That was ruled out — the VM's RAM
+was confirmed at 4096MB, unchanged from the first successful round.
+Checking archiso's actual source (`mkinitcpio-archiso`'s `hooks/archiso`)
 rather than continuing to guess turned up the real cause:
 ```bash
 cow_spacesize="$(getarg 'cow_spacesize' '256M')"
 ```
 `cow_spacesize` is a **hardcoded 256M default**, completely unrelated to
 RAM, unless a distro's own boot config explicitly overrides it with
-`cow_spacesize=` on the kernel command line. We never did — a real gap in
-our own `syslinux`/`efiboot` configs, not a VM setting.
+`cow_spacesize=` on the kernel command line. That override was missing — a
+real gap in the `syslinux`/`efiboot` configs, not a VM setting.
 
 **Fix**: added `cow_spacesize=75%` (adapts to whatever RAM is actually
 available) to all four live-boot kernel command lines — BIOS main + speech
 (`syslinux/archiso_sys-linux.cfg`), UEFI main + speech
 (`efiboot/loader/entries/0{1,2}-archiso-*.conf`). PXE entries left alone
-(not something we're testing). This should also resolve the `paru` build
+(out of scope for this testing). This should also resolve the `paru` build
 failure, which was almost certainly the same disk-space exhaustion, not a
 logic bug in the bootstrap script itself.
 
@@ -136,7 +136,7 @@ wait) → notify on completion. One-time cost — the script exits immediately
 on every login after `paru` exists. This is the direct tradeoff of choosing
 "first-run bootstrap" over "prebuilt binary repo" earlier in the project;
 the latter would remove the wait at the cost of build/hosting
-infrastructure we deliberately deferred.
+infrastructure deliberately deferred to a later phase.
 
 Branding (boot menu, Plymouth, GDM, About panel) reconfirmed working after
 the rebuild too.
@@ -153,7 +153,7 @@ ISO burned to USB, booted on a physical laptop via UEFI (not VirtualBox).
 | Stage | Evidence | Result |
 |---|---|---|
 | systemd-boot menu | Photo | Plain text menu on black, listing entries + "Boot in 14s" countdown — expected appearance, not a bug (systemd-boot has no background-image support, unlike syslinux's vesamenu; documented as expected since the initial boot-menu branding work) |
-| Selecting "OBLinux live/install medium (x86_64, UEFI)" | Marco's report | Boots through Plymouth → GDM → desktop, same as BIOS |
+| Selecting "OBLinux live/install medium (x86_64, UEFI)" | Manual confirmation | Boots through Plymouth → GDM → desktop, same as BIOS |
 
 **Resolves the round-1 VirtualBox black-screen question**: confirmed a
 VirtualBox-specific UEFI/graphics quirk, not an OBLinux bug — real hardware
@@ -167,7 +167,7 @@ are now fully verified.**
   medium... with speech", matching the main UEFI entry.
 - **Boot menu splash scale/position**: checked `syslinux`'s own docs rather
   than guess again — confirmed `MENU RESOLUTION` defaults to `640 480`
-  (matching our image exactly, so it wasn't a scaling bug at all), but
+  (matching the image exactly, so it wasn't a scaling bug at all), but
   `MENU VSHIFT 10` (inherited unchanged from upstream) puts the menu box's
   top edge around y=171, which the original composition's lower half
   (down to y≈345) overlapped. Re-rendered smaller and top-anchored
