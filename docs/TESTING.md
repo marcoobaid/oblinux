@@ -160,7 +160,19 @@ VirtualBox-specific UEFI/graphics quirk, not an OBLinux bug — real hardware
 boots UEFI cleanly end to end, matching BIOS behavior. **Both boot modes
 are now fully verified.**
 
-### Still open (cosmetic only, nothing functional)
+## 2026-08-06 — cosmetics cleanup
 
-- UEFI speech entry branding ("Arch Linux" text)
-- Boot menu splash scale/position at non-640×480 resolutions (BIOS/syslinux only)
+- **UEFI speech entry branding**: `efiboot/loader/entries/02-archiso-speech-linux.conf`
+  title changed from "Arch Linux install medium..." to "OBLinux live/install
+  medium... with speech", matching the main UEFI entry.
+- **Boot menu splash scale/position**: checked `syslinux`'s own docs rather
+  than guess again — confirmed `MENU RESOLUTION` defaults to `640 480`
+  (matching our image exactly, so it wasn't a scaling bug at all), but
+  `MENU VSHIFT 10` (inherited unchanged from upstream) puts the menu box's
+  top edge around y=171, which the original composition's lower half
+  (down to y≈345) overlapped. Re-rendered smaller and top-anchored
+  (y=12–137) so it sits entirely clear of the box. Not yet re-verified with
+  a fresh build/boot — pending next test round.
+
+Nothing outstanding on the boot→login checklist after this. Next up:
+Calamares.

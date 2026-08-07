@@ -32,8 +32,9 @@ confirmed working on both boot modes. Three real bugs were found and fixed along
 (AUR bootstrap dependency resolution, zsh prompt override, and a live-session disk space
 cap) — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md). The UEFI black
 screen seen in VirtualBox was confirmed as a VirtualBox-specific quirk, not an OBLinux bug,
-by the real-hardware test. Only cosmetic items remain open (UEFI speech entry branding,
-boot-menu splash scaling at non-640×480 resolutions).
+by the real-hardware test. The two remaining cosmetic items (UEFI speech entry branding,
+boot-menu splash overlapping the vesamenu box) have been fixed; pending re-verification on
+the next build.
 
 Built so far:
 

@@ -161,6 +161,18 @@ dimensions, unaffected by browser zoom/DPR) rasterizes it and POSTs the PNG
 bytes to a small local save endpoint — gives pixel-exact output without
 needing ImageMagick/cairosvg/etc. installed on this machine.
 
+**Layout revision (2026-08-06)**: the original composition (mark centered
+around y=115–280, wordmark below it down to y≈345) visually clashed with
+vesamenu's menu box, which — per `syslinux`'s own docs — renders starting
+around `MENU VSHIFT 10` (≈ row 10 of 28, ~y=171px), a value inherited
+unchanged from upstream's `archiso_head.cfg`. The lower half of our original
+composition sat inside the box's territory. Re-rendered smaller (80px icon,
+26px wordmark) and anchored to the top of the frame (y=12–137) so the whole
+thing sits entirely above y=171, clear of the box, instead of overlapping
+it. `MENU VSHIFT`/`ROWS`/row-position directives themselves were left
+untouched — adjusting the artwork to fit the existing, already-tuned box
+layout was the lower-risk fix.
+
 ## Next steps
 
 1. ~~Logo/wordmark~~ — done, see above.
