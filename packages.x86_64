@@ -150,14 +150,18 @@ xdg-desktop-portal-gnome
 ## NetworkManager is what GNOME Settings' network panel expects)
 networkmanager
 
-## OBLinux: AUR support (paru is built on first login, see
-## /usr/local/bin/oblinux-aur-bootstrap). base-devel/git/rust are its build
-## deps — rust ships pre-installed (cargo) rather than downloaded at first
-## login, since paru is written in Rust and pulling the whole toolchain
-## over the network during a live session would make first login slow.
+## OBLinux: AUR support — base-devel/git for building AUR packages generally;
+## paru itself comes prebuilt from oblinux_repo (see pacman.conf) rather
+## than being built on first login, since it's needed instantly, not a few
+## minutes after boot.
 base-devel
 git
-rust
 
 ## OBLinux: boot splash (theme: airootfs/usr/share/plymouth/themes/oblinux)
 plymouth
+
+## OBLinux: installer + AUR helper, from oblinux_repo (not in official
+## repos — see pacman.conf's [oblinux_repo] section and
+## docs/CUSTOM_REPO.md for how these get built and published)
+calamares
+paru

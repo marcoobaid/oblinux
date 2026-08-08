@@ -16,6 +16,11 @@ sudo mkarchiso -v .
 The finished ISO is written to `out/`. `work/` and `out/` are gitignored — safe to delete between
 builds (`sudo rm -rf work out`).
 
+**Before building**: `calamares` and `paru` come from
+[`oblinux_repo`](https://github.com/marcoobaid/oblinux_repo) (both are AUR-only, not in the
+official repos) — if they aren't built and published there yet, `pacstrap` will fail to resolve
+them and the build will fail. See [`docs/CUSTOM_REPO.md`](docs/CUSTOM_REPO.md).
+
 `mkarchiso` (not `build.sh`) is the current, correct entry point — `build.sh` was a deprecated shim
 upstream removed years ago; see [OBLinux-OLD](https://github.com/marcoobaid/OBLinux-OLD) for why
 that mattered.
@@ -41,8 +46,13 @@ Built so far:
       Settings' network panel expects)
 - [x] Text/identity branding: ISO name & label, hostname, `/etc/os-release`, `/etc/issue`, MOTD,
       boot menu titles (BIOS + UEFI)
-- [x] AUR support via a first-login bootstrap that builds `paru` (see
-      `airootfs/usr/local/bin/oblinux-aur-bootstrap`)
+- [x] AUR support via `paru`, prebuilt and installed like any other package (see below) —
+      replaces an earlier first-login-bootstrap approach that built it from source on first login
+- [x] Custom package repo (`oblinux_repo`, GitHub Pages) wired into `pacman.conf` (build-time)
+      and `airootfs/etc/pacman.conf` (persists to the live/installed system), for `calamares` and
+      `paru` (both AUR-only) plus future custom OBLinux packages. Details, and why Calamares'
+      own config is deliberately *not* packaged this way, in
+      [`docs/CUSTOM_REPO.md`](docs/CUSTOM_REPO.md).
 - [x] **Visual branding, boot→login checklist complete** — logo mark
       (`docs/branding/oblinux-mark*.svg`), boot splash (`syslinux/splash.png`), Plymouth boot theme
       (`airootfs/usr/share/plymouth/themes/oblinux/`, the amber spark orbits the ring during boot),
@@ -51,10 +61,11 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [ ] Calamares installer + OBLinux branding module (next increment)
+- [ ] Calamares installer (package + repo infrastructure in place; `settings.conf`, module
+      config, and cleanup-of-live-artifacts still to build) + OBLinux branding module
 - [ ] Default application package list (user-controlled — TBD)
 
-## Notes for future me
+## Implementation notes
 
 - `liveuser` has passwordless sudo (`/etc/sudoers.d/g_wheel`) for live-session convenience only.
   Calamares typically clones this live filesystem onto the install target, so **when the Calamares
