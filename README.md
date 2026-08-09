@@ -62,10 +62,12 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [ ] Calamares installer — package + repo infrastructure verified working; launches, but fails
-      on its own bundled stock example config (`initramfs` module isn't built into this package,
-      see [`docs/TESTING.md`](docs/TESTING.md) round 7). `settings.conf`, module config, and
-      cleanup-of-live-artifacts still to build, plus the OBLinux branding module
+- [ ] Calamares installer — `settings.conf`, all module configs (partitioning, users, bootloader,
+      live-artifact cleanup, etc.), and OBLinux branding all written, verified against Calamares'
+      own current source rather than guessed (see [`docs/CALAMARES.md`](docs/CALAMARES.md)). **Not
+      yet build/boot/install tested.** One more AUR-only package found and added:
+      `ckbcomp` (keyboard-layout live preview) — needs building/publishing to `oblinux_repo` like
+      `calamares`/`paru`.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

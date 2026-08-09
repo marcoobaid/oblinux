@@ -160,8 +160,12 @@ git
 ## OBLinux: boot splash (theme: airootfs/usr/share/plymouth/themes/oblinux)
 plymouth
 
-## OBLinux: installer + AUR helper, from oblinux_repo (not in official
-## repos — see pacman.conf's [oblinux_repo] section and
-## docs/CUSTOM_REPO.md for how these get built and published)
+## OBLinux: installer + AUR helper + keyboard-layout-preview helper for
+## Calamares' keyboard module, from oblinux_repo (not in official repos
+## — see pacman.conf's [oblinux_repo] section and docs/CUSTOM_REPO.md for
+## how these get built and published). ckbcomp is optional (keyboard
+## selection still works without it, just no live preview) but cheap to
+## include.
 calamares
 paru
+ckbcomp

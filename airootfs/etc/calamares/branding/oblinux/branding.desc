@@ -1,0 +1,57 @@
+# OBLinux Calamares branding.
+#
+# Checked Calamares' own current default branding.desc rather than reuse
+# the reference project's version unverified — its style key names
+# (sidebarBackground, sidebarTextSelect, etc.) are wrong for the current
+# schema, which uses SidebarBackground/SidebarText/SidebarTextCurrent/
+# SidebarBackgroundCurrent instead.
+#
+# Slideshow is deliberately a single static image, not QML — matches the
+# "minimal branded single panel" scope already decided for this phase
+# (no feature-showcase content exists yet to put in a multi-slide
+# walkthrough).
+---
+componentName:  oblinux
+
+welcomeStyleCalamares:   false
+
+welcomeExpandingLogo:   true
+
+windowSize: 1050px,700px
+
+windowPlacement: center
+
+sidebar: widget
+
+navigation: widget
+
+strings:
+    productName:         "${NAME}"
+    shortProductName:    OBLinux
+    version:             Rolling
+    shortVersion:        Rolling
+    versionedName:       "OBLinux (Rolling)"
+    shortVersionedName:  OBLinux
+    bootloaderEntryName: OBLinux
+    productUrl:          https://github.com/marcoobaid/oblinux
+    supportUrl:          https://github.com/marcoobaid/oblinux/issues
+    knownIssuesUrl:      https://github.com/marcoobaid/oblinux/issues
+    releaseNotesUrl:     https://github.com/marcoobaid/oblinux
+    donateUrl:           ""
+
+images:
+    productIcon:         "logo.png"
+    productLogo:         "logo.png"
+    productWelcome:      "logo.png"
+
+# Slate & Amber palette (docs/BRANDING.md) — Slate for sidebar chrome,
+# Cloud for text, Primary for the current-step highlight (matches this
+# project's own semantic mapping: Primary leads/selection, Amber is
+# reserved for actions/alerts, not decorative highlights).
+style:
+   SidebarBackground:        "#2c3a4e"
+   SidebarText:              "#f2f3f5"
+   SidebarTextCurrent:       "#f2f3f5"
+   SidebarBackgroundCurrent: "#3f6690"
+
+slideshow: [ "logo.png" ]
