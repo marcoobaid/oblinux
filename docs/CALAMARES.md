@@ -24,6 +24,12 @@ against each other:
      `sidebarTextHighlight`.
    - `GRUB_DISTRIBUTOR` isn't a manual `grubcfg.conf` default at all —
      it's calculated from `branding.desc`'s `bootloaderEntryName`.
+   - the `shellprocess` module's placeholder token is `${ROOT}`, not
+     `@@ROOT@@` — the latter is what the reference project's older
+     Calamares version used. This one wasn't caught in review (it's valid
+     YAML either way, so nothing failed to parse) and only surfaced in the
+     first real install test as a literal, unsubstituted path handed to
+     `sed`/`rm`. See "Round 8" in `docs/TESTING.md`.
 2. **uarchiso's `archiso-calamares-config`**
    (`gitlab.com/uaiso/labs/uarchiso/archiso-calamares-config`, found via
    the AUR package of the same name) — a real, working Calamares config
@@ -112,8 +118,14 @@ already existed. Slideshow is a single static image
 (`slideshow: [ "logo.png" ]`), not QML — matches that same decision, no
 feature-showcase content exists yet to justify a multi-slide walkthrough.
 
-## Not yet verified
+## Build/install testing
 
-None of this has been through an actual build/boot/install test yet —
-everything above is verified against documentation and source, not
-execution. First real build is the next step.
+First real install attempt: see "Round 8" in `docs/TESTING.md`. Summary —
+reached ~90% before failing on the `@@ROOT@@` bug described above (now
+fixed, not yet re-verified by an actual run). A separate, unexplained
+installer crash on selecting the "Swap (no Hibernate)" partitioning option
+was also observed once; `partition.conf`'s `userSwapChoices` values
+(`none`/`small`) are valid against Calamares' own schema, so this isn't a
+config error as far as source review can tell — needs reproducing with a
+log captured (Calamares writes to `/var/log/Calamares.log` during install)
+before it can be root-caused.

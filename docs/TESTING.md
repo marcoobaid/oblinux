@@ -211,3 +211,45 @@ concrete requirement for it: skip the generic `initramfs` module entirely
 and use a `shellprocess` step calling `mkinitcpio -P` instead — the
 standard approach on Arch-based Calamares distros anyway, since Arch uses
 `mkinitcpio`, not `dracut`.
+
+## 2026-08-09 — round 8: first real Calamares install attempt (VirtualBox, BIOS)
+
+`ckbcomp` built and published to `oblinux_repo` (third and final AUR-only
+dependency). Rebuilt, booted, and ran the OBLinux-authored Calamares
+config (`docs/CALAMARES.md`) for the first time, end to end, targeting a
+20 GiB virtual disk with "Erase disk".
+
+| Stage | Evidence | Result |
+|---|---|---|
+| Boot + branding + `paru` | Screenshot | All previously-verified artifacts intact |
+| Calamares installed on the system | Screenshot | Confirmed present (from `packages.x86_64`) |
+| Calamares branding | Screenshot | Sidebar/logo/palette render correctly (Slate & Amber, ring mark) |
+| Install run | Screenshot | Reaches ~90% (`shellprocess@before`, in the `exec` sequence) then fails |
+
+### Bug found and fixed (commit follows)
+
+- **`shellprocess@before` failed**: `sed: can't read @@ROOT@@/etc/mkinitcpio.conf: No such file or directory` (exit code 2). Root cause verified against Calamares' actual current source
+  (`libcalamares/utils/CommandList.cpp`): the shell placeholder token is
+  `${ROOT}`, not `@@ROOT@@` — `@@ROOT@@` is what the reference project
+  (`archiso-calamares-config`, an older Calamares version) used, and it
+  was carried over unverified when `shellprocess-before.conf`/
+  `shellprocess-final.conf` were written. Since it's valid YAML either
+  way, nothing caught it before an actual `sed`/`rm` command ran against
+  the literal, unsubstituted string. **Fix**: `@@ROOT@@` → `${ROOT}` in
+  both files (10 occurrences total). Not yet re-verified by an actual
+  install — next build/test round should confirm this clears `exec` and
+  completes.
+
+### Open item — not yet root-caused
+
+- **Installer crashed/closed** on the *first* attempt, immediately after
+  selecting "Swap (no Hibernate)" from the swap dropdown on the Partitions
+  page (Erase disk mode). No error dialog — the whole application closed.
+  Reopening and reinstalling with "No swap" selected produced the run
+  described above instead. `partition.conf`'s `userSwapChoices` values
+  (`none`, `small`) are valid against Calamares' own partition module
+  schema, so this doesn't look like an OBLinux config error as far as
+  source review can tell. Needs reproducing with `/var/log/Calamares.log`
+  captured afterward (survives the crash, unlike a screenshot of a closed
+  window) before it can be root-caused. Retest once the `${ROOT}` fix
+  above is verified.

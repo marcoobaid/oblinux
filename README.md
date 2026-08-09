@@ -64,10 +64,12 @@ Built so far:
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
 - [ ] Calamares installer — `settings.conf`, all module configs (partitioning, users, bootloader,
       live-artifact cleanup, etc.), and OBLinux branding all written, verified against Calamares'
-      own current source rather than guessed (see [`docs/CALAMARES.md`](docs/CALAMARES.md)). **Not
-      yet build/boot/install tested.** One more AUR-only package found and added:
-      `ckbcomp` (keyboard-layout live preview) — needs building/publishing to `oblinux_repo` like
-      `calamares`/`paru`.
+      own current source rather than guessed (see [`docs/CALAMARES.md`](docs/CALAMARES.md)).
+      `ckbcomp` built and published to `oblinux_repo` alongside `calamares`/`paru`. **First real
+      install test (2026-08-09) reached ~90% before failing** on a `shellprocess` placeholder-token
+      bug (`@@ROOT@@` vs. the correct `${ROOT}`) — fixed, not yet re-verified. A separate installer
+      crash on selecting the swap option is still open/unreproduced. Full log:
+      [`docs/TESTING.md`](docs/TESTING.md) (round 8).
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes
