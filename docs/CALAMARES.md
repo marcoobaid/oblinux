@@ -121,11 +121,29 @@ feature-showcase content exists yet to justify a multi-slide walkthrough.
 ## Build/install testing
 
 First real install attempt: see "Round 8" in `docs/TESTING.md`. Summary —
-reached ~90% before failing on the `@@ROOT@@` bug described above (now
-fixed, not yet re-verified by an actual run). A separate, unexplained
-installer crash on selecting the "Swap (no Hibernate)" partitioning option
-was also observed once; `partition.conf`'s `userSwapChoices` values
-(`none`/`small`) are valid against Calamares' own schema, so this isn't a
-config error as far as source review can tell — needs reproducing with a
-log captured (Calamares writes to `/var/log/Calamares.log` during install)
-before it can be root-caused.
+reached ~90% before failing on the `@@ROOT@@` bug described above (fixed).
+A separate, unexplained installer crash on selecting the "Swap (no
+Hibernate)" partitioning option was also observed once; `partition.conf`'s
+`userSwapChoices` values (`none`/`small`) are valid against Calamares' own
+schema, so this isn't a config error as far as source review can tell —
+still open, needs reproducing with `~/.cache/calamares/session.log`
+captured (see below for the real log location; an earlier answer here
+about `/var/log/Calamares.log` was wrong).
+
+Second attempt (round 9): got further, then failed on `mkinitcpio` with
+`/dev must be mounted!`. Root cause was in `mount.conf`, not the
+`shellprocess` steps — `options: bind` on the `/dev` and `/run/udev`
+extraMounts entries needs to be a YAML list (`options: [ bind ]`).
+Calamares' mount module does `",".join(partition["options"])`; given a
+bare string it iterated the string's characters instead, turning `bind`
+into the mount options `b,i,n,d` and silently failing both bind mounts.
+Fixed; not yet re-verified by an actual run. Full log analysis in
+`docs/TESTING.md`, round 9.
+
+Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
+location, falling back to `$HOME` then `/tmp`) — verified against
+`libcalamares/utils/Dirs.cpp`/`Logger.cpp`, not assumed. Since Calamares
+runs via `pkexec`, `HOME` is normally reset to the elevated user, so on
+the live session this is `/root/.cache/calamares/session.log`, readable
+via `sudo`. This log — not a screenshot — is what actually diagnosed both
+round 8 and round 9's failures.

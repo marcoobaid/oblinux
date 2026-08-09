@@ -253,3 +253,47 @@ config (`docs/CALAMARES.md`) for the first time, end to end, targeting a
   captured afterward (survives the crash, unlike a screenshot of a closed
   window) before it can be root-caused. Retest once the `${ROOT}` fix
   above is verified.
+
+## 2026-08-09 — round 9: `session.log`-diagnosed mount bug (VirtualBox, BIOS)
+
+ISO rebuilt with the round 8 `${ROOT}` fix, install re-run with "Erase
+disk" / "No swap". Got further than round 8 (past `shellprocess@before`)
+before failing at job 17/34, "Creating initramfs with mkinitcpio…" — same
+screenshot-visible symptom as round 7 (`/dev must be mounted!`), but this
+time from a config actually written for this project, not the stock
+example. `session.log` (`~/.cache/calamares/session.log`, read via `sudo`
+from `/root/...` since Calamares runs under `pkexec`) was captured for
+the first time and made the real root cause immediately visible,
+several steps upstream of the mkinitcpio failure itself:
+
+```
+Running mount -o "b,i,n,d" /dev /tmp/calamares-root-.../dev
+Target cmd: ... Exit code: 32 output:
+mount: .../dev: fsconfig() failed: squashfs: Unknown parameter 'b'.
+```
+
+### Bug found and fixed (commit follows)
+
+- **`mount.conf`'s `/dev` and `/run/udev` bind mounts silently failed**:
+  `options: bind` (a bare YAML string) was written expecting it to mean
+  the single mount option `bind`. Calamares' mount module actually builds
+  the `-o` argument with `",".join(partition["options"])` — verified
+  directly against `src/modules/mount/main.py` — which expects `options`
+  to be a *list*. Given a bare string, Python iterated its individual
+  characters instead, producing mount options `b,i,n,d` (four bogus
+  single-letter options) instead of `bind`. Both bind mounts failed
+  (logged as `WARNING: [PYTHON JOB]: "Cannot mount /dev"` etc., non-fatal
+  at the time), so `/dev` was never available inside the target chroot by
+  the time `mkinitcpio -p linux` ran there — the actual, later error.
+  **Fix**: `options: bind` → `options: [ bind ]` on both entries.
+
+This also means round 7 and round 8's `mkinitcpio` failures were never
+actually caused by anything in `shellprocess-before.conf`/the HOOKS
+line — the `@@ROOT@@` fix from round 8 was still correct and necessary
+(the shell commands were genuinely broken), it just wasn't sufficient on
+its own to reach a clean `mkinitcpio` run, since this `mount.conf` bug
+was present the whole time and only became reachable once round 8's bug
+was fixed.
+
+Not yet re-verified by an actual run — next build/test round should
+confirm this clears job 17 and the install completes.
