@@ -32,6 +32,12 @@ Short version: **packages must be built and published to `oblinux_repo`
 before running `mkarchiso`** — if `calamares`/`paru` aren't there yet,
 `pacstrap` will fail to resolve them and the ISO build will fail.
 
+**Verified working end to end as of 2026-08-08** (`calamares-3.4.2-2` and
+`paru-2.1.0-2` published, confirmed served correctly via GitHub Pages, and
+confirmed resolving on a built/booted system — `paru` itself reports
+`oblinux_repo is up to date` alongside `core`/`extra`). See
+[`docs/TESTING.md`](TESTING.md), round 7.
+
 ## Why not a `oblinux-calamares-config` package
 
 Calamares' own config/branding (`settings.conf`, module configs,

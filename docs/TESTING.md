@@ -184,3 +184,30 @@ no overlap. All prior functional confirmations (round 4/5) held.
 mark, boot splash, Plymouth theme, GDM logo/background, os-release icon,
 BIOS + UEFI boot (both modes, both main + speech entries) — is built,
 verified, and documented. Next up: Calamares.
+
+## 2026-08-08 — round 7: oblinux_repo infrastructure verified (VirtualBox, BIOS)
+
+`calamares` and `paru` built on the build machine and published to
+`oblinux_repo` (see [`docs/CUSTOM_REPO.md`](CUSTOM_REPO.md)). Rebuilt and
+booted.
+
+| Stage | Evidence | Result |
+|---|---|---|
+| Boot + branding | Screenshot | ISO built and booted cleanly, all branding intact |
+| `oblinux_repo` resolves on the built system | `paru` output | `oblinux_repo is up to date` alongside `core`/`extra` — confirms the repo is wired into both the build-time and persisted `pacman.conf` correctly |
+| `paru` itself | Terminal | Runs correctly — prebuilt-package delivery (superseding the old first-login bootstrap) confirmed working |
+| Calamares launches | Screenshot | Reaches a full wizard UI (Welcome → Location → Keyboard → Partitions → Users → Summary → Install → Finish) |
+| Calamares install | Screenshot | Fails: **"Calamares Initialization Failed" — module `initramfs@initramfs` could not be loaded** |
+
+**Expected, not a new bug**: there's no OBLinux-authored `settings.conf`
+yet, so Calamares falls back to its own bundled stock example config
+(installed by the AUR `PKGBUILD` via `-DINSTALL_CONFIG=ON`). That example
+config references a module called `initramfs` — but the same `PKGBUILD`
+explicitly skips building that module (along with `dracut`,
+`dracutlukscfg`, and a few others, via its `_skip_modules` list, checked
+when the `PKGBUILD` was first reviewed). Confirms Increment 1's actual
+`settings.conf`/module config work is the right next step, and surfaces a
+concrete requirement for it: skip the generic `initramfs` module entirely
+and use a `shellprocess` step calling `mkinitcpio -P` instead — the
+standard approach on Arch-based Calamares distros anyway, since Arch uses
+`mkinitcpio`, not `dracut`.

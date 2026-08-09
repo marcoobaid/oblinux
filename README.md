@@ -50,8 +50,9 @@ Built so far:
       replaces an earlier first-login-bootstrap approach that built it from source on first login
 - [x] Custom package repo (`oblinux_repo`, GitHub Pages) wired into `pacman.conf` (build-time)
       and `airootfs/etc/pacman.conf` (persists to the live/installed system), for `calamares` and
-      `paru` (both AUR-only) plus future custom OBLinux packages. Details, and why Calamares'
-      own config is deliberately *not* packaged this way, in
+      `paru` (both AUR-only) plus future custom OBLinux packages. **Verified working end to end** —
+      both packages built, published, and confirmed resolving on a built/booted system. Details,
+      and why Calamares' own config is deliberately *not* packaged this way, in
       [`docs/CUSTOM_REPO.md`](docs/CUSTOM_REPO.md).
 - [x] **Visual branding, boot→login checklist complete** — logo mark
       (`docs/branding/oblinux-mark*.svg`), boot splash (`syslinux/splash.png`), Plymouth boot theme
@@ -61,8 +62,10 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [ ] Calamares installer (package + repo infrastructure in place; `settings.conf`, module
-      config, and cleanup-of-live-artifacts still to build) + OBLinux branding module
+- [ ] Calamares installer — package + repo infrastructure verified working; launches, but fails
+      on its own bundled stock example config (`initramfs` module isn't built into this package,
+      see [`docs/TESTING.md`](docs/TESTING.md) round 7). `settings.conf`, module config, and
+      cleanup-of-live-artifacts still to build, plus the OBLinux branding module
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes
