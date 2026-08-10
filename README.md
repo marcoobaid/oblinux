@@ -70,8 +70,8 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [x] **Calamares installer — first successful end-to-end install verified (round 12,
-      2026-08-09)**. `settings.conf`, all module configs (partitioning, users, bootloader,
+- [x] **Calamares installer — successful end-to-end install verified, repeatably (rounds 12–13,
+      2026-08-09/10)**. `settings.conf`, all module configs (partitioning, users, bootloader,
       live-artifact cleanup, etc.), and OBLinux branding all written, verified against
       Calamares' own current source rather than guessed (see
       [`docs/CALAMARES.md`](docs/CALAMARES.md)). `ckbcomp` built and published to
@@ -79,17 +79,21 @@ Built so far:
       testing (8–12), one new bug surfacing after each fix as the install got further:
       `shellprocess` placeholder token (`@@ROOT@@` vs. `${ROOT}`), `mount.conf`'s `options: bind`
       needing to be a YAML list, `linux.preset` pointing at a live-only mkinitcpio config,
-      `packages.conf` missing the required `backend: pacman` key. Full log with root causes:
-      [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–12). Remaining open items, none blocking
-      a basic install:
-      - `/etc/calamares` was left on the installed system — fixed (added to
-        `shellprocess-final.conf`), not yet re-verified by an actual run
-      - installed system's GRUB menu is unthemed (the live ISO's boot menu isn't affected) —
-        not yet scoped, may belong with phase 3/4 theming instead of this phase
-      - default shell on the installed system is bash, not zsh — expected, deferred with the
-        rest of theming
-      - an intermittent installer crash right after choosing the swap option recurred in round
-        12's log (auto-recovers) — still not root-caused
+      `packages.conf` missing the required `backend: pacman` key. Round 13 confirmed the last
+      follow-up (`/etc/calamares` no longer left on the installed system). Full log with root
+      causes: [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–13). Closing out remaining polish
+      items next (none block a basic install):
+      - [x] default shell on the installed system was silently staying bash — `users.conf` used
+        a made-up `userShell` key instead of the real nested `user.shell`; also added
+        `/etc/skel/.zshrc` so new users don't hit zsh's first-run wizard. Fixed a second,
+        adjacent bug found the same way (`passwordRequirements.nonempty` isn't a real key
+        either — confirmed by a warning present in every `session.log` so far — so no minimum
+        password length was actually being enforced; now `minLength: 1`). Not yet re-verified
+        by an actual run.
+      - [ ] installed system's GRUB menu is unthemed (the live ISO's boot menu isn't affected) —
+        in progress
+      - [ ] an intermittent installer crash right after choosing the swap option recurred in
+        round 12's log (auto-recovers) — still not root-caused, investigating next
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

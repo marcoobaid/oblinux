@@ -30,6 +30,18 @@ against each other:
      YAML either way, so nothing failed to parse) and only surfaced in the
      first real install test as a literal, unsubstituted path handed to
      `sed`/`rm`. See "Round 8" in `docs/TESTING.md`.
+   - `users.conf`'s shell setting is `user.shell` (nested under a `user:`
+     block), not a flat `userShell` key — again valid YAML either way, so
+     it silently fell back to `useradd`'s own default (`/bin/bash`)
+     instead of erroring. Caught only by diffing the actual `useradd`
+     invocation in `session.log` against what `users.conf` intended.
+     `passwordRequirements.nonempty` is the same story: not a real key
+     (`minLength`/`maxLength`/`libpwquality` are), and Calamares actually
+     logs a warning about it every single run —
+     `WARNING: nonempty check is ignored; use minLength: 1` — visible in
+     every `session.log` produced by this project so far, unnoticed until
+     cross-checking this file against source for the shell bug. Both
+     fixed; see round 14 in `docs/TESTING.md` once verified.
 2. **uarchiso's `archiso-calamares-config`**
    (`gitlab.com/uaiso/labs/uarchiso/archiso-calamares-config`, found via
    the AUR package of the same name) — a real, working Calamares config
@@ -165,10 +177,15 @@ all confirmed working. `packages.conf`'s missing `backend` key was
 therefore the last blocking bug in the install sequence itself. Two
 small follow-ups came out of this round: `/etc/calamares` was left
 behind on the installed system (fixed, added to
-`shellprocess-final.conf`, not yet re-verified), and `session.log`
-evidence suggests the round 8 swap-dropdown crash recurred (auto-
-recovered, still not root-caused). Full log analysis in
-`docs/TESTING.md`, rounds 9-12.
+`shellprocess-final.conf`), and `session.log` evidence suggests the
+round 8 swap-dropdown crash recurred (auto-recovered, still not
+root-caused).
+
+**Round 13** confirmed the `/etc/calamares` fix — no longer present on
+the installed system. Phase 2's core goal (a basic OBLinux system
+installable via Calamares, that boots on its own afterward) is now
+verified working end-to-end, repeatably. Full log analysis in
+`docs/TESTING.md`, rounds 9-13.
 
 Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
 location, falling back to `$HOME` then `/tmp`) — verified against

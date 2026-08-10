@@ -434,3 +434,15 @@ but this narrows down where in the sequence it happens.
   Auto-recovers (Calamares restarts cleanly and the next attempt works),
   so not a hard blocker, but worth root-causing before this phase is
   called done.
+
+## 2026-08-10 — round 13: `/etc/calamares` cleanup verified (VirtualBox)
+
+ISO rebuilt with the round 12 `shellprocess-final.conf` fix, install
+re-run. Confirmed on the installed system: `/etc/calamares` is no longer
+present post-install. Closes that follow-up item from round 12.
+
+With this, Phase 2's core goal — a basic OBLinux system installable via
+Calamares, that boots on its own afterward — is verified working
+end-to-end, repeatably. Still open, not blocking: installed GRUB menu is
+unthemed, default shell is bash not zsh, the swap-dropdown crash is
+unreproduced-on-demand and still not root-caused.
