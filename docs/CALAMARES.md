@@ -137,8 +137,18 @@ extraMounts entries needs to be a YAML list (`options: [ bind ]`).
 Calamares' mount module does `",".join(partition["options"])`; given a
 bare string it iterated the string's characters instead, turning `bind`
 into the mount options `b,i,n,d` and silently failing both bind mounts.
-Fixed; not yet re-verified by an actual run. Full log analysis in
-`docs/TESTING.md`, round 9.
+Fixed.
+
+Third attempt (round 10): the round 9 fix confirmed working (bind mounts
+succeeded in `session.log`), got one step further, then failed on
+`mkinitcpio` again — this time `Invalid option -c -- '...archiso.conf'
+must be readable`. `airootfs/etc/mkinitcpio.d/linux.preset` (the standard
+archiso-profile preset, not OBLinux-authored) still pointed at the
+archiso-only mkinitcpio config that `shellprocess-before.conf` correctly
+deletes — that step never replaced `linux.preset` itself. Fixed by adding
+a step that overwrites it with the standard `default`+`fallback` preset.
+Not yet re-verified by an actual run. Full log analysis in
+`docs/TESTING.md`, rounds 9-10.
 
 Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
 location, falling back to `$HOME` then `/tmp`) — verified against

@@ -297,3 +297,43 @@ was fixed.
 
 Not yet re-verified by an actual run — next build/test round should
 confirm this clears job 17 and the install completes.
+
+## 2026-08-09 — round 10: `linux.preset` bug (VirtualBox, BIOS)
+
+ISO rebuilt with the round 9 `mount.conf` fix, install re-run the same
+way. `session.log` confirms the round 9 fix worked — `mount -o "bind"`
+(not `b,i,n,d`) for both `/dev` and `/run/udev`, both succeeding this
+time. Progress got one step further, to job 18/35, "Creating initramfs
+with mkinitcpio…", before failing again — a different error this time:
+
+```
+==> Building image from preset: /etc/mkinitcpio.d/linux.preset: 'archiso'
+==> Using configuration file: '/etc/mkinitcpio.conf.d/archiso.conf'
+==> ERROR: Invalid option -c -- '/etc/mkinitcpio.conf.d/archiso.conf' must be readable
+```
+
+### Bug found and fixed (commit follows)
+
+- **`linux.preset` still pointed at the deleted archiso config**:
+  `airootfs/etc/mkinitcpio.d/linux.preset` is the standard archiso-profile
+  preset override (not OBLinux-specific) — it defines a single
+  `PRESETS=('archiso')` preset whose `-c` config file is
+  `/etc/mkinitcpio.conf.d/archiso.conf`. `shellprocess-before.conf`
+  correctly deletes that config file (it's live-only, see reasons 1-2 in
+  the file's own header comment) but never touched `linux.preset` itself,
+  so `mkinitcpio -p linux` kept trying to use the now-missing file.
+  **Fix**: added a third step to `shellprocess-before.conf` that
+  overwrites `linux.preset` with the standard `default`+`fallback` preset
+  the `linux` package itself ships (verified against mkinitcpio's own
+  upstream example preset and Arch packaging conventions) — the same
+  preset layout a normal Arch install ends up with, nothing
+  OBLinux-specific to maintain.
+
+Not yet re-verified by an actual run — next build/test round should
+confirm this clears job 18 and the install completes. Three rounds (8, 9,
+10) of the same category of bug — live-only artifacts that unpackfs
+clones onto the target unless explicitly cleaned up — suggests a closer
+line-by-line audit of everything airootfs ships, cross-referenced against
+what's actually live-only vs. what should persist, would be worth doing
+once the install completes cleanly at least once, rather than continuing
+to find these one `mkinitcpio` run at a time.
