@@ -90,8 +90,13 @@ Built so far:
         either — confirmed by a warning present in every `session.log` so far — so no minimum
         password length was actually being enforced; now `minLength: 1`). Not yet re-verified
         by an actual run.
-      - [ ] installed system's GRUB menu is unthemed (the live ISO's boot menu isn't affected) —
-        in progress
+      - [x] installed system's GRUB menu was unthemed — root cause was `grubcfg.conf` forcing
+        `GRUB_TERMINAL_OUTPUT: "console"`, which blocks any graphical theme regardless of what
+        else is configured. Fixed alongside writing the actual theme
+        (`airootfs/usr/share/grub/themes/oblinux/`, same Slate & Amber palette and mark as the
+        rest of the boot experience) — see [`docs/BRANDING.md`](docs/BRANDING.md). Not yet
+        build/boot tested — GRUB themes fail closed (silently fall back to plain menu), so this
+        needs a real boot to confirm, not just config review.
       - [ ] an intermittent installer crash right after choosing the swap option recurred in
         round 12's log (auto-recovers) — still not root-caused, investigating next
 - [ ] Default application package list (user-controlled — TBD)

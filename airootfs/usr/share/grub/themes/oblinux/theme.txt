@@ -1,0 +1,63 @@
+# OBLinux GRUB theme (installed-system boot menu).
+#
+# Syntax verified against GRUB's own bundled example theme
+# (grub-core/themes/starfield/theme.txt) and the gfxmenu theme-format
+# reference (grub.gibibit.com/Theme_format), not guessed — in particular:
+# pixmap_style box images require the full 9-piece sliced naming
+# convention (prefix_c/n/s/e/w/ne/nw/se/sw.png); a single plain image
+# is not supported there.
+#
+# No custom font is set anywhere in this file (title-font, item_font,
+# etc. are all left unset) — GRUB falls back to whatever font is already
+# loaded (its own bundled unicode.pf2), same "no font dependency" approach
+# already used for the boot splash/Plymouth (see docs/BRANDING.md).
+#
+# Colors are OBLinux's Slate & Amber palette (docs/BRANDING.md): Ink
+# background, Slate for the menu panel ("Surface / chrome" in the
+# semantic mapping table), Primary for the selected-item highlight
+# ("boot menu selection" is Primary's documented role), Cloud for text.
+
+title-text: ""
+
+desktop-image: "background.png"
+desktop-color: "#151a22"
+
+# Selected item gets a Primary-filled highlight bar (highlight_*.png);
+# unselected items are borderless/transparent, so no item_pixmap_style.
++ boot_menu {
+	left = 20%
+	width = 60%
+	top = 55%
+	height = 34%
+
+	item_color = "#f2f3f5"
+	item_height = 40
+	item_padding = 8
+	item_spacing = 6
+	item_icon_space = 0
+	icon_width = 0
+	icon_height = 0
+
+	selected_item_color = "#f2f3f5"
+	selected_item_pixmap_style = "highlight_*.png"
+
+	menu_pixmap_style = "panel_*.png"
+
+	scrollbar = false
+}
+
+# Countdown to auto-boot (GRUB_TIMEOUT: 5, grubcfg.conf) — Slate track,
+# Primary fill, matches the palette's own semantic mapping instead of
+# GRUB's default styling.
++ progress_bar {
+	id = "__timeout__"
+	left = 20%
+	top = 91%
+	width = 60%
+	height = 18
+	text = "@TIMEOUT_NOTIFICATION_MIDDLE@"
+	text_color = "#f2f3f5"
+	fg_color = "#3f6690"
+	bg_color = "#2c3a4e"
+	border_color = "#3f6690"
+}

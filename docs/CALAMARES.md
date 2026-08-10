@@ -187,6 +187,18 @@ installable via Calamares, that boots on its own afterward) is now
 verified working end-to-end, repeatably. Full log analysis in
 `docs/TESTING.md`, rounds 9-13.
 
+**Polish pass after round 13** (closing out remaining open items rather
+than starting phase 3/4): `users.conf` had two more of these
+valid-YAML-but-wrong-key bugs — `userShell` isn't real (`user.shell`,
+nested, is) and `passwordRequirements.nonempty` isn't real either
+(`minLength: 1` is), the second one independently confirmed by a warning
+Calamares has been logging on every single run so far, unnoticed until
+now. Also found and fixed: `grubcfg.conf` was forcing
+`GRUB_TERMINAL_OUTPUT: "console"`, which is why the installed system's
+GRUB menu stayed unthemed through every round — full writeup in
+`docs/BRANDING.md`'s new GRUB section, since it's fundamentally a
+branding asset, not a Calamares-specific one.
+
 Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
 location, falling back to `$HOME` then `/tmp`) — verified against
 `libcalamares/utils/Dirs.cpp`/`Logger.cpp`, not assumed. Since Calamares
