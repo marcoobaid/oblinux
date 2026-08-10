@@ -35,7 +35,15 @@ speech entries), Plymouth, GDM, GNOME desktop, `liveuser` autologin, NetworkMana
 passwordless sudo, the zsh prompt, and the AUR bootstrap (`paru` builds successfully on
 first login) are all confirmed working. Three real bugs and two cosmetic issues were found
 and fixed along the way — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md).
-Nothing outstanding on this checklist; next up is Calamares.
+
+**First successful end-to-end Calamares install verified 2026-08-09** (VirtualBox, BIOS): a
+fresh disk erase-install completes cleanly, and the resulting system boots on its own —
+GRUB, Plymouth, GDM, and GNOME desktop login all confirmed working, `sudo` working for the
+installed user. Reaching that point took 5 rounds of install → log → fix testing (rounds
+8–12; `docs/TESTING.md`), each round's fix uncovering the next bug further into the install
+sequence. A few polish items remain open (installed GRUB menu is unthemed, default shell is
+bash not zsh, an intermittent installer crash on the swap option isn't yet root-caused) —
+see the Calamares checklist item below.
 
 Built so far:
 
@@ -62,20 +70,26 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [ ] Calamares installer — `settings.conf`, all module configs (partitioning, users, bootloader,
-      live-artifact cleanup, etc.), and OBLinux branding all written, verified against Calamares'
-      own current source rather than guessed (see [`docs/CALAMARES.md`](docs/CALAMARES.md)).
-      `ckbcomp` built and published to `oblinux_repo` alongside `calamares`/`paru`. Four real
-      install attempts so far (2026-08-09), each getting one step further after fixing the last:
-      round 8 (`shellprocess` placeholder token, `@@ROOT@@` vs. the correct `${ROOT}`), round 9
-      (`mount.conf`'s `options: bind` needed to be a YAML list, `options: [ bind ]`), round 10
-      (`linux.preset` still pointed at a live-only mkinitcpio config `shellprocess-before.conf`
-      deletes) — rounds 8–10 all the same category of bug, live-only artifacts unpackfs clones onto
-      the target unless explicitly cleaned up. Round 11 confirmed `mkinitcpio` now completes
-      cleanly, then failed on `packages.conf` missing the required `backend: pacman` key. All
-      fixed, **not yet re-verified by an actual run**. A separate installer crash on selecting the
-      swap option (round 8) did not reproduce in round 11 with swap selected again, so it's left
-      open rather than closed. Full log: [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–11).
+- [x] **Calamares installer — first successful end-to-end install verified (round 12,
+      2026-08-09)**. `settings.conf`, all module configs (partitioning, users, bootloader,
+      live-artifact cleanup, etc.), and OBLinux branding all written, verified against
+      Calamares' own current source rather than guessed (see
+      [`docs/CALAMARES.md`](docs/CALAMARES.md)). `ckbcomp` built and published to
+      `oblinux_repo` alongside `calamares`/`paru`. Getting to a clean install took 5 rounds of
+      testing (8–12), one new bug surfacing after each fix as the install got further:
+      `shellprocess` placeholder token (`@@ROOT@@` vs. `${ROOT}`), `mount.conf`'s `options: bind`
+      needing to be a YAML list, `linux.preset` pointing at a live-only mkinitcpio config,
+      `packages.conf` missing the required `backend: pacman` key. Full log with root causes:
+      [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–12). Remaining open items, none blocking
+      a basic install:
+      - `/etc/calamares` was left on the installed system — fixed (added to
+        `shellprocess-final.conf`), not yet re-verified by an actual run
+      - installed system's GRUB menu is unthemed (the live ISO's boot menu isn't affected) —
+        not yet scoped, may belong with phase 3/4 theming instead of this phase
+      - default shell on the installed system is bash, not zsh — expected, deferred with the
+        rest of theming
+      - an intermittent installer crash right after choosing the swap option recurred in round
+        12's log (auto-recovers) — still not root-caused
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

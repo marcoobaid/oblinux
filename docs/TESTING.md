@@ -374,3 +374,63 @@ unmount kicked in.
 Not yet re-verified by an actual run — next build/test round should
 confirm this clears job 30 and reaches `grubcfg`/`bootloader`, the last
 untested part of the sequence.
+
+## 2026-08-09 — round 12: first successful end-to-end install (VirtualBox, BIOS)
+
+ISO rebuilt with the round 11 `packages.conf` fix, install re-run.
+`session.log` confirms: **all 35 jobs completed,
+`Config::doNotify`'s final line reads `completion: succeeded`.** First
+clean install, start to finish, no fixes needed mid-run. Rebooted into
+the installed system and verified further from the desktop side:
+
+| Stage | Evidence | Result |
+|---|---|---|
+| Install | `session.log` | `completion: succeeded`, all 35 jobs |
+| GRUB → Plymouth → GDM → desktop | Screenshots | Boots cleanly; Plymouth animation plays correctly; reaches GDM, logs in as `marco` |
+| GRUB menu | Screenshot | Boots and lists "OBLinux Linux" / "Advanced options for OBLinux Linux" — functional, unthemed (plain GNU GRUB default look) |
+| `marco` account | Terminal, GDM | Created during install, can `sudo`, default shell `/bin/bash` (as configured — zsh is a live-session-only default, not yet carried into `users.conf`) |
+
+Also visible in `session.log`, confirming several earlier fixes at once:
+`mkinitcpio` completed cleanly (job 18), `packages` removed the
+`calamares` package via `pacman -Rs` without error (job 30), `grubcfg`
+correctly detected no `dracut`/`systemd` hook and left the plymouth hook
+alone (job 31), and `bootloader` ran `grub-install --target=i386-pc
+--recheck --force /dev/sda` followed by `grub-mkconfig -o
+/boot/grub/grub.cfg`, both without error (job 32) — the last part of the
+sequence that had never actually executed until this round.
+
+**Also caught in the log, not from the screenshots**: two
+`=== START CALAMARES` banners 9 seconds apart, right after "Erase disk" +
+swap was chosen — the first run's log stops abruptly mid partition-setup
+(no error, no clean shutdown) and a fresh process start follows
+immediately after. Since `=== START CALAMARES` is the application's own
+startup banner, this can only mean the whole process restarted — i.e.
+this looks like the same round-8 swap-dropdown crash recurring, at
+essentially the same point (right after the Erase+swap choice is
+applied, during the `restoreSelectedBootLoader`/`setBootLoaderInstallPath`
+sequence), auto-recovered without a report this time. Still not
+root-caused — no crash handler output/backtrace reaches `session.log` —
+but this narrows down where in the sequence it happens.
+
+### Follow-up items noted (not yet actioned)
+
+- **`/etc/calamares` left on the installed system** — `packages` removes
+  the `calamares` binary itself but nothing removed its config tree.
+  Fixed: added a step to `shellprocess-final.conf` removing
+  `${ROOT}/etc/calamares` (verified safe against `preservefiles.conf` —
+  it copies Calamares' own in-memory log/report data to `/var/log/`, not
+  anything under `/etc/calamares`, so no ordering conflict). Not yet
+  re-verified by an actual run.
+- **GRUB menu is unthemed** — plain default GNU GRUB look. The live ISO's
+  boot menu (syslinux/systemd-boot) has full OBLinux branding; the
+  installed system's GRUB currently doesn't. Not yet scoped/scheduled —
+  open question whether this belongs in this phase's wrap-up or is
+  deferred alongside the rest of theming/ricing (phase 3/4).
+- **Default shell is bash, not zsh** — expected; `users.conf` doesn't set
+  a shell yet, so `useradd` uses its own default. The live session's zsh
+  setup (prompt, `.zshrc`) was live-only and never meant to carry over
+  automatically. Deferred, per README's existing phase-3/4 theming note.
+- **Swap-dropdown crash** — recurred (see above), still not root-caused.
+  Auto-recovers (Calamares restarts cleanly and the next attempt works),
+  so not a hard blocker, but worth root-causing before this phase is
+  called done.

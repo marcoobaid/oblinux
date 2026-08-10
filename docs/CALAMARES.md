@@ -156,9 +156,19 @@ job: "Bad backend" / `backend="None"`. `packages.conf` never set the
 required top-level `backend` key (verified against
 `src/modules/packages/main.py` — `backend =
 configuration.get("backend")`, no default, fails exactly this way if
-unset or unrecognized). Fixed: added `backend: pacman`. Not yet
-re-verified by an actual run. Full log analysis in `docs/TESTING.md`,
-rounds 9-11.
+unset or unrecognized). Fixed: added `backend: pacman`.
+
+**Fifth attempt (round 12): first successful end-to-end install.**
+`session.log` confirms `completion: succeeded` across all 35 jobs.
+Rebooted into the installed system — GRUB, Plymouth, GDM, desktop login
+all confirmed working. `packages.conf`'s missing `backend` key was
+therefore the last blocking bug in the install sequence itself. Two
+small follow-ups came out of this round: `/etc/calamares` was left
+behind on the installed system (fixed, added to
+`shellprocess-final.conf`, not yet re-verified), and `session.log`
+evidence suggests the round 8 swap-dropdown crash recurred (auto-
+recovered, still not root-caused). Full log analysis in
+`docs/TESTING.md`, rounds 9-12.
 
 Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
 location, falling back to `$HOME` then `/tmp`) — verified against
