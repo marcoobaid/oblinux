@@ -147,8 +147,18 @@ archiso-profile preset, not OBLinux-authored) still pointed at the
 archiso-only mkinitcpio config that `shellprocess-before.conf` correctly
 deletes — that step never replaced `linux.preset` itself. Fixed by adding
 a step that overwrites it with the standard `default`+`fallback` preset.
-Not yet re-verified by an actual run. Full log analysis in
-`docs/TESTING.md`, rounds 9-10.
+
+Fourth attempt (round 11): the round 10 fix confirmed working —
+`mkinitcpio` completed cleanly this time. Swap selected on the
+Partitions page with no repeat of the round 8 crash either (not
+confirmed fixed, just not reproduced). New failure at the `packages`
+job: "Bad backend" / `backend="None"`. `packages.conf` never set the
+required top-level `backend` key (verified against
+`src/modules/packages/main.py` — `backend =
+configuration.get("backend")`, no default, fails exactly this way if
+unset or unrecognized). Fixed: added `backend: pacman`. Not yet
+re-verified by an actual run. Full log analysis in `docs/TESTING.md`,
+rounds 9-11.
 
 Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
 location, falling back to `$HOME` then `/tmp`) — verified against

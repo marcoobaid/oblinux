@@ -337,3 +337,40 @@ line-by-line audit of everything airootfs ships, cross-referenced against
 what's actually live-only vs. what should persist, would be worth doing
 once the install completes cleanly at least once, rather than continuing
 to find these one `mkinitcpio` run at a time.
+
+## 2026-08-09 — round 11: `packages.conf` missing `backend` (VirtualBox, BIOS)
+
+ISO rebuilt with the round 10 `linux.preset` fix, install re-run — this
+time with "Swap (no Hibernate)" selected on the Partitions page. Two
+pieces of good news up front, both visible in `session.log`:
+
+- **`mkinitcpio` completed successfully** (job 18/35 finished cleanly,
+  moved on to job 19) — confirms the round 10 `linux.preset` fix worked.
+  Rounds 8-10's chain of `mkinitcpio`-adjacent bugs is now clear.
+- **No crash on selecting swap this time** — a 2047MiB linux-swap
+  partition was created and the install proceeded normally. Doesn't
+  confirm the round 8 swap-dropdown crash is fixed (nothing changed that
+  would explain it), but it didn't reproduce here either — leaving that
+  item open rather than closing it, see below.
+
+New failure, at job 30/35 ("packages"): the installer's error dialog just
+said "Bad backend" / `backend="None"`, no further detail. `session.log`
+showed job 30 starting, then nothing else from it before the emergency
+unmount kicked in.
+
+### Bug found and fixed (commit follows)
+
+- **`packages.conf` never set `backend`**: verified against Calamares'
+  own `packages` module source (`src/modules/packages/main.py`) — it
+  reads `backend = libcalamares.job.configuration.get("backend")` with no
+  default, and fails immediately with exactly `"Bad backend",
+  backend="{backend}"` if that doesn't match a registered package manager
+  (`pacman`, `apt`, `dnf`, etc.). Missing the key entirely gives
+  `backend="None"` — precisely the observed error. `packages.conf` had
+  `pacman:` (the pacman-specific options block) but never the required
+  top-level `backend: pacman` selecting that backend in the first place.
+  **Fix**: added `backend: pacman`.
+
+Not yet re-verified by an actual run — next build/test round should
+confirm this clears job 30 and reaches `grubcfg`/`bootloader`, the last
+untested part of the sequence.

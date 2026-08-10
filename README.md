@@ -65,15 +65,17 @@ Built so far:
 - [ ] Calamares installer — `settings.conf`, all module configs (partitioning, users, bootloader,
       live-artifact cleanup, etc.), and OBLinux branding all written, verified against Calamares'
       own current source rather than guessed (see [`docs/CALAMARES.md`](docs/CALAMARES.md)).
-      `ckbcomp` built and published to `oblinux_repo` alongside `calamares`/`paru`. Three real
+      `ckbcomp` built and published to `oblinux_repo` alongside `calamares`/`paru`. Four real
       install attempts so far (2026-08-09), each getting one step further after fixing the last:
       round 8 (`shellprocess` placeholder token, `@@ROOT@@` vs. the correct `${ROOT}`), round 9
       (`mount.conf`'s `options: bind` needed to be a YAML list, `options: [ bind ]`), round 10
       (`linux.preset` still pointed at a live-only mkinitcpio config `shellprocess-before.conf`
-      deletes). All three are the same category of bug — live-only artifacts unpackfs clones onto
-      the target unless explicitly cleaned up. All fixed, **not yet re-verified by an actual run**.
-      A separate installer crash on selecting the swap option is still open/unreproduced. Full log:
-      [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–10).
+      deletes) — rounds 8–10 all the same category of bug, live-only artifacts unpackfs clones onto
+      the target unless explicitly cleaned up. Round 11 confirmed `mkinitcpio` now completes
+      cleanly, then failed on `packages.conf` missing the required `backend: pacman` key. All
+      fixed, **not yet re-verified by an actual run**. A separate installer crash on selecting the
+      swap option (round 8) did not reproduce in round 11 with swap selected again, so it's left
+      open rather than closed. Full log: [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–11).
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes
