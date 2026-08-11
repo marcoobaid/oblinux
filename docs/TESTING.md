@@ -585,3 +585,51 @@ throughout anyway.
 
 Not yet re-verified by an actual install — next round should confirm
 this clears `unpackfs` on the same hardware.
+
+## 2026-08-11 — round 17: `copytoram=n` confirmed, real UEFI bug found
+
+Two builds this round: a VM re-test (BIOS) confirming the `copytoram=n`
+fix worked with no issues, then the same ISO burned to USB and
+installed on the same physical laptop as round 16 — which this time
+booted UEFI (round 16 was BIOS). Got much further than round 16
+(`unpackfs` cleared), then failed at job 33/36, `bootloader`:
+
+```
+Installing for x86_64-efi platform.
+EFI variables are not supported on this system.
+EFI variables are not supported on this system.
+grub-install: error: efibootmgr failed to register the boot entry: No such file or directory.
+```
+
+### Root cause
+
+Scanning the `mount` job's actual output (job 11), no `efivarfs` mount
+was ever attempted, despite this clearly being a real UEFI system — the
+ESP was correctly detected and mounted at `/boot/efi`
+(`PartitionCoreModule::scanForEfiSystemPartitions()`: "system is EFI and
+new EFI system partition has been found"), and `bootloader` itself later
+chose the EFI target.
+
+Pulled `src/modules/mount/main.py` fully verbatim (given the `grubcfg`
+lesson two rounds ago, not trusting a summarized read on anything
+decision-critical again) — and found `mount.conf` had a config key,
+`extraMountsEfi:`, that **does not exist anywhere in the module's actual
+source**. The real mechanism: a single `extraMounts` list, where
+individual entries marked `efi: true` get pruned out at runtime if
+`firmwareType` isn't `"efi"`. `mount.conf` had invented a separate
+top-level key instead — valid YAML, so nothing ever errored, but
+silently inert on every platform since round 8. Never mattered until
+this round's first real UEFI install attempt; every prior Calamares
+round (VM and round 16's BIOS boot) never needed `/sys/firmware/efi`
+at all.
+
+Confirmed the correct structure against Calamares' own real `mount.conf`
+example rather than infer it purely from the Python logic — matches
+exactly: the `efivarfs` entry moved inside `extraMounts`, tagged
+`efi: true`.
+
+### Fix
+
+Moved the `efivarfs` entry from the now-deleted `extraMountsEfi:` block
+into `extraMounts:`, with `efi: true` added. Not yet re-verified by an
+actual UEFI install.

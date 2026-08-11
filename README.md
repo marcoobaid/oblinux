@@ -44,11 +44,13 @@ confirmed working. Reaching that point took 8 rounds of install → log → fix 
 sequence. One known issue remains, deliberately deprioritized (an intermittent, non-blocking
 installer crash) — see the Calamares checklist item below.
 
-**First real-hardware Calamares attempt (2026-08-11, round 16) found a bug no VM test could
-have caught**: `unpackfs` failed outright — a VM-only quirk (VirtualBox mounts an attached ISO
-as virtual optical media) had been silently masking a real bug in how the live squashfs gets
-located on genuine USB boot media. Root-caused and fixed (`copytoram=n` on every live-boot
-entry); not yet re-verified on hardware. See the Calamares checklist item below.
+**Real-hardware Calamares testing (2026-08-11) is finding a steady stream of bugs no VM test
+could reach**, each needing hardware to surface: round 16's `unpackfs` failure (`copytoram`
+auto-enabling on real USB media, a state VirtualBox's virtual-optical-media handling can't
+reach regardless of RAM — fixed with `copytoram=n`) was confirmed fixed in round 17, which then
+hit a second bug on this laptop's first real UEFI boot attempt — an invented `mount.conf` key
+(`extraMountsEfi`) that Calamares' actual source never reads at all, silently inert since round
+8. Fixed; not yet re-verified. See the Calamares checklist item below.
 
 Built so far:
 
@@ -102,15 +104,18 @@ Built so far:
         ours). A raw `SIGSEGV` doesn't reach `session.log`, so a real fix needs a
         `coredumpctl`-captured backtrace from an actual reproduction — not chased since it
         doesn't block an install. Revisit if it gets worse.
-      - [ ] **First real-hardware attempt (round 16, 2026-08-11) failed at `unpackfs`** — a bug
-        no VM test could reach. `unpackfs.conf`'s hardcoded squashfs path only stays valid while
-        archiso's `copytoram` boot feature is off; `copytoram=auto` (the default, never
-        overridden until now) auto-enables when boot media isn't optical and there's enough
-        RAM — conditions a real USB stick on real hardware meets but a VirtualBox VM
-        structurally can't (an attached ISO mounts as *virtual optical* media there, blocking
-        auto-enable regardless of RAM). Fixed with `copytoram=n` set explicitly on every
-        live-boot kernel command line. Not yet re-verified on hardware. See
-        [`docs/TESTING.md`](docs/TESTING.md) round 16.
+      - [x] **Round 16 (2026-08-11) failed at `unpackfs`** — `copytoram` auto-enabling on real
+        USB media, a state VirtualBox's virtual-optical-media handling structurally can't reach
+        regardless of RAM. Fixed with `copytoram=n` on every live-boot entry. **Confirmed fixed
+        in round 17** (VM re-test, no issues).
+      - [ ] **Round 17's first real UEFI attempt failed at `bootloader`** — `grub-install`
+        couldn't register the EFI boot entry ("EFI variables are not supported on this system").
+        Root cause: `mount.conf` had an invented `extraMountsEfi:` key that
+        `src/modules/mount/main.py` never actually reads — the real mechanism is a single
+        `extraMounts` list with individual entries marked `efi: true`. Silently inert since
+        round 8, on every platform; never mattered until this round's first real UEFI boot.
+        Fixed: `efivarfs` moved into `extraMounts` with `efi: true`. Not yet re-verified. See
+        [`docs/TESTING.md`](docs/TESTING.md) rounds 16–17.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

@@ -256,3 +256,14 @@ runs via `pkexec`, `HOME` is normally reset to the elevated user, so on
 the live session this is `/root/.cache/calamares/session.log`, readable
 via `sudo`. This log — not a screenshot — is what actually diagnosed both
 round 8 and round 9's failures.
+
+**Round 17 (first real UEFI install attempt) found another invented,
+never-real config key**: `mount.conf` had a top-level `extraMountsEfi:`
+block that doesn't exist anywhere in `src/modules/mount/main.py` — the
+real mechanism is a single `extraMounts` list with individual entries
+marked `efi: true`, pruned at runtime if `firmwareType` isn't `"efi"`.
+Silently inert since round 8, on every platform, since nothing before
+this round ever needed `/sys/firmware/efi/efivars` mounted. Confirmed
+against Calamares' own real `mount.conf` example, not inferred from the
+Python alone. Fixed; not yet re-verified. Full writeup:
+`docs/TESTING.md` round 17.
