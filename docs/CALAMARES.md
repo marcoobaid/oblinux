@@ -199,6 +199,28 @@ GRUB menu stayed unthemed through every round — full writeup in
 `docs/BRANDING.md`'s new GRUB section, since it's fundamentally a
 branding asset, not a Calamares-specific one.
 
+**Swap-dropdown crash investigation** (round 8's open item): compared
+the crashed and successful runs in round 12's `session.log` line by
+line. Selecting "Erase disk" alone always logs a clean 3-job queue
+(table, root partition, flags); the crash happens specifically in
+whatever handles the swap dropdown's selection changing afterward — the
+crashed run's log stops mid-partitioning-setup, before a single log line
+from that recompute path (`swapSuggestion()`, the second `CreatePartitionJob`
+for swap) ever printed. Checked for a known cause rather than guess:
+[PR #2392](https://github.com/calamares/calamares/pull/2392) fixed a
+real swap+"Erase disk" crash
+([issue #2367](https://github.com/calamares/calamares/issues/2367)),
+but it's GPT-specific (partition boundary math for `lastSectorForRoot`);
+OBLinux uses `msdos`/MBR tables on BIOS, a different code path, and the
+fix is already in Calamares 3.4.2 (the version we use) regardless of
+partition table type. Not our bug. A raw `SIGSEGV` kills the process
+before Qt/Calamares logs anything about it, so `session.log` can't show
+the crash itself — only the last thing that happened before it. Further
+root-causing needs a `coredumpctl`-captured backtrace from an actual
+reproduction (`systemd-coredump` should already be active, no extra
+setup — part of `systemd`/`base`). **Deprioritized, not chased further
+for now** (user's call) — it auto-recovers and doesn't block an install.
+
 Calamares' own session log is `~/.cache/calamares/session.log` (Qt cache
 location, falling back to `$HOME` then `/tmp`) — verified against
 `libcalamares/utils/Dirs.cpp`/`Logger.cpp`, not assumed. Since Calamares

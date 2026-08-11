@@ -97,8 +97,16 @@ Built so far:
         rest of the boot experience) — see [`docs/BRANDING.md`](docs/BRANDING.md). Not yet
         build/boot tested — GRUB themes fail closed (silently fall back to plain menu), so this
         needs a real boot to confirm, not just config review.
-      - [ ] an intermittent installer crash right after choosing the swap option recurred in
-        round 12's log (auto-recovers) — still not root-caused, investigating next
+      - [~] **known issue, deprioritized**: an intermittent installer crash right after choosing
+        the swap option (round 8, recurred round 12). Log analysis narrowed the trigger to the
+        swap-dropdown's recompute handler, and ruled out a known historical Calamares bug in the
+        same area ([PR #2392](https://github.com/calamares/calamares/pull/2392)/
+        [issue #2367](https://github.com/calamares/calamares/issues/2367) — GPT-specific, we use
+        MBR/`msdos`, and it's already merged into our Calamares version regardless). A raw
+        `SIGSEGV` doesn't reach `session.log`, so a real fix needs a `coredumpctl`-captured
+        backtrace from an actual reproduction — not chased for now since it auto-recovers and
+        doesn't block an install. Revisit if it starts happening more often or stops
+        auto-recovering.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

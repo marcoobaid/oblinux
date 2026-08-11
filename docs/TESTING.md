@@ -443,6 +443,30 @@ present post-install. Closes that follow-up item from round 12.
 
 With this, Phase 2's core goal — a basic OBLinux system installable via
 Calamares, that boots on its own afterward — is verified working
-end-to-end, repeatably. Still open, not blocking: installed GRUB menu is
-unthemed, default shell is bash not zsh, the swap-dropdown crash is
-unreproduced-on-demand and still not root-caused.
+end-to-end, repeatably.
+
+## 2026-08-10 — Phase 2 polish pass
+
+Closing out the three items still open after round 13 (user's explicit
+choice — close out Calamares/Phase 2 polish before starting phase 3/4):
+
+1. **Default shell was bash, not zsh** — `users.conf` used a made-up
+   `userShell` key instead of the real nested `user.shell`; a second,
+   adjacent bug (`passwordRequirements.nonempty`, not a real key either)
+   found the same way and fixed alongside it. `airootfs/etc/skel/.zshrc`
+   added so new users don't hit zsh's first-run wizard. Fixed, not yet
+   re-verified by an actual run.
+2. **Installed GRUB menu was unthemed** — root cause was `grubcfg.conf`
+   forcing `GRUB_TERMINAL_OUTPUT: "console"`. Fixed alongside writing an
+   actual theme (`airootfs/usr/share/grub/themes/oblinux/`). Full
+   writeup in `docs/BRANDING.md`. Not yet build/boot tested.
+3. **Swap-dropdown crash** — investigated via log analysis (see
+   `docs/CALAMARES.md`); trigger narrowed to the swap-choice recompute
+   handler, ruled out a known historical Calamares bug in the same area
+   (GPT-specific, not ours). No backtrace possible from `session.log`
+   alone (a raw `SIGSEGV` never reaches it). **Documented and
+   deprioritized** — user's call, given it auto-recovers and doesn't
+   block an install. Would need a `coredumpctl`-captured backtrace from
+   an actual reproduction to go further; revisit only if it gets worse.
+
+Next build/test round should cover items 1 and 2.
