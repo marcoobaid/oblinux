@@ -470,3 +470,44 @@ choice — close out Calamares/Phase 2 polish before starting phase 3/4):
    an actual reproduction to go further; revisit only if it gets worse.
 
 Next build/test round should cover items 1 and 2.
+
+## 2026-08-10 — round 14: polish-pass results (VirtualBox, BIOS)
+
+ISO rebuilt with the polish-pass fixes (shell/password, GRUB theme),
+install re-run.
+
+| Item | Result |
+|---|---|
+| Full install | Completes end to end |
+| zsh as default shell | **Confirmed working** — opening a terminal shows the zsh prompt directly, no first-run configuration wizard (`/etc/skel/.zshrc` doing its job) |
+| GRUB theme | **Did not render** — plain default GRUB menu, unchanged from every prior round |
+| Swap-dropdown crash | **Reproduced twice back-to-back**, did not reproduce a third attempt — consistent with the intermittent, non-deterministic behavior already documented; no new action taken per the round 13 decision to deprioritize |
+
+### GRUB theme — investigation, and the real root cause
+
+`grub-install`/`grub-mkconfig` both ran clean in `session.log` (no error
+output), so config-writing wasn't an obvious suspect from the install
+log alone. First pass: self-audited `theme.txt`, found two properties
+that were only ever verified as "the schema accepts this key name,"
+never confirmed to actually work — `icon_width`/`icon_height: 0` and
+`menu_pixmap_style`. Checked a real, actively-maintained community theme
+(rose-pine/grub) — it uses neither in that form. Removed both,
+`panel_*.png` deleted.
+
+That fix turned out to be addressing a real (if minor) issue, but not
+*the* issue. Requested `/etc/default/grub` and `/boot/grub/grub.cfg`
+from the still-installed VM to check the config-writing side for real,
+rather than assume — and both showed `GRUB_THEME`/`GRUB_TERMINAL_OUTPUT`
+still at their stock, untouched values. Traced this through Calamares'
+`grubcfg/main.py`, pulled fully verbatim this time (an earlier read of
+the same file had missed this): the entire `defaults:` block in
+`grubcfg.conf` — all 8 keys — was being silently skipped every round,
+gated behind an `always_use_defaults` flag this project's config never
+set. `GRUB_GFXMODE`/`GRUB_GFXPAYLOAD_LINUX` only ever *looked* correct
+because they happen to already be Arch's own stock values, unrelated to
+our config. Fixed with `always_use_defaults: true`. Full writeup,
+including the corrected earlier claim, in `docs/BRANDING.md` and
+`docs/CALAMARES.md`.
+
+Both fixes (the `theme.txt` trim and `always_use_defaults: true`) are
+in for round 15. Not yet re-verified by an actual build/boot.

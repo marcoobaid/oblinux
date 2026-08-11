@@ -83,24 +83,27 @@ Built so far:
       follow-up (`/etc/calamares` no longer left on the installed system). Full log with root
       causes: [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–13). Closing out remaining polish
       items next (none block a basic install):
-      - [x] default shell on the installed system was silently staying bash — `users.conf` used
-        a made-up `userShell` key instead of the real nested `user.shell`; also added
+      - [x] **default shell — verified working (round 14)**: `users.conf` used a made-up
+        `userShell` key instead of the real nested `user.shell`; also added
         `/etc/skel/.zshrc` so new users don't hit zsh's first-run wizard. Fixed a second,
         adjacent bug found the same way (`passwordRequirements.nonempty` isn't a real key
         either — confirmed by a warning present in every `session.log` so far — so no minimum
-        password length was actually being enforced; now `minLength: 1`). Not yet re-verified
-        by an actual run.
-      - [x] installed system's GRUB menu was unthemed — root cause was `grubcfg.conf` forcing
-        `GRUB_TERMINAL_OUTPUT: "console"`, which blocks any graphical theme regardless of what
-        else is configured. Fixed alongside writing the actual theme
-        (`airootfs/usr/share/grub/themes/oblinux/`, same Slate & Amber palette and mark as the
-        rest of the boot experience) — see [`docs/BRANDING.md`](docs/BRANDING.md). Not yet
-        build/boot tested — GRUB themes fail closed (silently fall back to plain menu), so this
-        needs a real boot to confirm, not just config review.
+        password length was actually being enforced; now `minLength: 1`). Round 14 confirms:
+        terminal opens straight to a working zsh prompt, no wizard.
+      - [ ] installed system's GRUB menu is unthemed — round 14's first fix attempt
+        (`GRUB_TERMINAL_OUTPUT: "console"`) **did not render**. Real cause found by inspecting
+        the installed target directly: `grubcfg.conf`'s entire `defaults:` block (all 8 keys)
+        was being silently skipped every round, gated behind an `always_use_defaults` flag this
+        project's config never set — an earlier "verified against source" claim here turned out
+        to be based on an incomplete read of that same source file. Fixed with
+        `always_use_defaults: true`, alongside a smaller `theme.txt` cleanup (two properties
+        that were only ever schema-verified, not confirmed working). Awaiting round 15. See
+        [`docs/BRANDING.md`](docs/BRANDING.md).
       - [~] **known issue, deprioritized**: an intermittent installer crash right after choosing
-        the swap option (round 8, recurred round 12). Log analysis narrowed the trigger to the
-        swap-dropdown's recompute handler, and ruled out a known historical Calamares bug in the
-        same area ([PR #2392](https://github.com/calamares/calamares/pull/2392)/
+        the swap option (round 8, recurred round 12, reproduced twice back-to-back then not a
+        third time in round 14 — consistent with non-deterministic). Log analysis narrowed the
+        trigger to the swap-dropdown's recompute handler, and ruled out a known historical
+        Calamares bug in the same area ([PR #2392](https://github.com/calamares/calamares/pull/2392)/
         [issue #2367](https://github.com/calamares/calamares/issues/2367) — GPT-specific, we use
         MBR/`msdos`, and it's already merged into our Calamares version regardless). A raw
         `SIGSEGV` doesn't reach `session.log`, so a real fix needs a `coredumpctl`-captured

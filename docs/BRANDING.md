@@ -179,18 +179,44 @@ Phase 2 polish, not phase 1 scope — the live ISO's own boot menu
 *installed* system's GRUB menu, which stayed the plain default text menu
 through every Calamares round up to and including round 13.
 
-Root cause, not just a missing asset: `grubcfg.conf` (the Calamares
-module that patches `/etc/default/grub` on the target) was explicitly
-setting `GRUB_TERMINAL_OUTPUT: "console"`. That one setting alone means
-no graphical theme can ever render, regardless of `GRUB_THEME` — GRUB
+First root cause identified: `grubcfg.conf` was explicitly setting
+`GRUB_TERMINAL_OUTPUT: "console"`. That one setting alone means no
+graphical theme can ever render, regardless of `GRUB_THEME` — GRUB
 requires `gfxterm` output for any graphics at all. Fixed alongside adding
 the theme itself: `GRUB_TERMINAL_OUTPUT` → `"gfxterm"`,
 `GRUB_GFXMODE: "auto"`, `GRUB_GFXPAYLOAD_LINUX: "keep"` (avoids a
 mode-switch flicker between GRUB and Plymouth, which already expects a
-graphical framebuffer), `GRUB_THEME` pointing at the new theme file.
-Verified these three new keys get appended by Calamares' patch-mode
-logic even though none of them exist in Arch's stock `/etc/default/grub`
-(checked `src/modules/grubcfg/main.py` directly, not assumed).
+graphical framebuffer), `GRUB_THEME` pointing at the new theme file —
+all set inside `grubcfg.conf`'s `defaults:` block.
+
+**This alone wasn't enough — a second, bigger bug was hiding underneath
+it**, only found after round 14's failed test by reading real target
+system files (`/etc/default/grub`, `/boot/grub/grub.cfg`) rather than
+just re-reading `theme.txt` again. Those files showed `GRUB_THEME` and
+`GRUB_TERMINAL_OUTPUT` still sitting at their untouched stock values —
+the `defaults:` block was never being written *at all*. Tracing this
+through Calamares' `grubcfg/main.py` (pulled fully verbatim this time,
+not summarized — an earlier read of the same file had missed this exact
+detail) found the real mechanism:
+
+```python
+always_use_defaults = ...configuration.get("always_use_defaults", False)
+if always_use_defaults or overwrite or not os.path.exists(default_grub):
+    if "defaults" in ...configuration:
+        for key, value in ...configuration["defaults"].items():
+            grub_config_items[key] = ...
+```
+
+The entire `defaults:` block is only ever applied if `always_use_defaults`,
+`overwrite`, or "the file doesn't exist yet" is true. `grubcfg.conf` had
+`overwrite: false` and never set `always_use_defaults` at all (defaults
+to `false`), and `/etc/default/grub` already exists (shipped by the
+`grub` package) — so none of the three conditions were ever true, and
+`defaults:` — all 8 keys in it, not just the GRUB_THEME-related ones —
+was silently skipped in full, every single round. `GRUB_GFXMODE`/
+`GRUB_GFXPAYLOAD_LINUX` only ever *looked* like they were working
+because they happen to already be Arch's own stock values, unrelated to
+our config entirely. Fixed with one line: `always_use_defaults: true`.
 
 Assets: `airootfs/usr/share/grub/themes/oblinux/` — matches Arch's own
 `grub` package convention of installing its bundled `starfield` theme at
@@ -203,14 +229,12 @@ Assets: `airootfs/usr/share/grub/themes/oblinux/` — matches Arch's own
   the boot splash/Plymouth, composited with Pillow rather than the
   HTML/canvas pipeline (no text/font rendering needed this time, just
   compositing already-rendered PNGs).
-- `panel_*.png` / `highlight_*.png` — 9-piece sliced box images (GRUB's
-  `pixmap_style` requires this exact slicing; a single plain image isn't
-  supported, verified against GRUB's own theme-format reference). Flat
-  Slate for the menu panel and flat Primary for the selected-item
-  highlight bar — both fully solid, no border art — generated
-  programmatically (draw one rounded-rect tile, crop into corners/edges/
-  center) rather than hand-drawn, since the design itself is flat color,
-  not decorative.
+- `highlight_*.png` — a 9-piece sliced box image (GRUB's `pixmap_style`
+  requires this exact slicing; a single plain image isn't supported,
+  verified against GRUB's own theme-format reference). Flat Primary,
+  fully solid, no border art — generated programmatically (draw one
+  rounded-rect tile, crop into corners/edges/center) rather than
+  hand-drawn, since the design itself is flat color, not decorative.
 - `theme.txt` — no custom font referenced anywhere (`item_font`,
   `title-font`, etc. all left unset); GRUB falls back to its own already-
   loaded bundled font, same "no font dependency" approach as the boot
@@ -218,15 +242,31 @@ Assets: `airootfs/usr/share/grub/themes/oblinux/` — matches Arch's own
   `starfield` theme, not written from a remembered template.
 
 Palette mapping used matches `docs/BRANDING.md`'s own semantic table,
-written back in phase 1 before any of this existed: Slate for the menu
-panel ("Surface / chrome"), Primary for the selection highlight ("boot
-menu selection" is literally Primary's documented role above), Cloud for
-item text.
+written back in phase 1 before any of this existed: Primary for the
+selection highlight ("boot menu selection" is literally Primary's
+documented role above), Cloud for item text.
 
-Not yet build/boot tested — next round should confirm the theme
-actually renders (GRUB themes fail closed: a broken/unreadable theme
-just falls back to the plain menu silently, so this needs a real boot to
-confirm, not just config review).
+**Round 14 failed to render at all** (plain default GRUB menu, no error
+— GRUB themes fail closed). `grub-install`/`grub-mkconfig` both ran
+clean in `session.log`, so config-writing *looked* fine from the install
+log alone — it wasn't; see `always_use_defaults` above, found only after
+inspecting the actual installed target's files.
+
+Two fixes went in together for the next round: the `always_use_defaults`
+fix above (the real cause), and a `theme.txt` cleanup done in parallel
+by self-audit rather than proof — `icon_width`/`icon_height: 0` (an
+attempt to disable icons, never actually verified 0 is a valid value)
+and `menu_pixmap_style` (a whole-menu frame, `panel_*.png`, on top of
+the already-used `selected_item_pixmap_style`) were both only ever
+schema-verified, not confirmed working. Checked a real, actively
+maintained community theme
+([rose-pine/grub](https://github.com/rose-pine/grub)): it doesn't zero
+out icon dimensions, and doesn't use `menu_pixmap_style` at all — only
+`desktop-image` + `selected_item_pixmap_style`. Trimmed to match
+(`panel_*.png` deleted, no longer referenced) — this turned out not to
+be the round 14 bug, but it's a legitimate reduction in unverified
+surface area worth keeping regardless. Awaiting round 15's build/boot
+test.
 
 ## Next steps
 
@@ -235,8 +275,10 @@ confirm, not just config review).
 3. ~~Plymouth theme~~ — done, see above.
 4. ~~GDM logo + background~~ — done, see above.
 5. ~~os-release `LOGO` asset~~ — done, see above.
-6. ~~Installed-system GRUB theme~~ — written, see above; awaiting first
-   build/boot test.
+6. Installed-system GRUB theme — written, see above; round 14 failed to
+   render (real cause: `defaults:` block silently never applied, fixed
+   with `always_use_defaults: true`), awaiting round 15's build/boot
+   test.
 
 That's the full boot→login checklist (phase 1) plus its phase 2
 installed-system counterpart.

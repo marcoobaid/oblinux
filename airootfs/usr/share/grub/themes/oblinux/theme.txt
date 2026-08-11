@@ -13,9 +13,9 @@
 # already used for the boot splash/Plymouth (see docs/BRANDING.md).
 #
 # Colors are OBLinux's Slate & Amber palette (docs/BRANDING.md): Ink
-# background, Slate for the menu panel ("Surface / chrome" in the
-# semantic mapping table), Primary for the selected-item highlight
-# ("boot menu selection" is Primary's documented role), Cloud for text.
+# background, Primary for the selected-item highlight ("boot menu
+# selection" is Primary's documented role in the semantic mapping
+# table), Cloud for text.
 
 title-text: ""
 
@@ -24,6 +24,18 @@ desktop-color: "#151a22"
 
 # Selected item gets a Primary-filled highlight bar (highlight_*.png);
 # unselected items are borderless/transparent, so no item_pixmap_style.
+#
+# No icon_width/icon_height/item_icon_space, and no menu_pixmap_style —
+# both were in the first version of this file but were never actually
+# verified beyond "the property name exists in the schema"; unlike
+# everything else here, no real, working reference theme was checked
+# for how they behave with these values, and the first real boot test
+# showed the whole theme failing to render at all (GRUB themes fail
+# closed on any error). Trimmed back to exactly the feature set a real,
+# actively-used community theme (rose-pine/grub) uses successfully:
+# desktop-image + a plain-color boot_menu + selected_item_pixmap_style
+# only. panel_*.png (the now-unused menu_pixmap_style asset) removed
+# from the theme directory along with this.
 + boot_menu {
 	left = 20%
 	width = 60%
@@ -34,14 +46,9 @@ desktop-color: "#151a22"
 	item_height = 40
 	item_padding = 8
 	item_spacing = 6
-	item_icon_space = 0
-	icon_width = 0
-	icon_height = 0
 
 	selected_item_color = "#f2f3f5"
 	selected_item_pixmap_style = "highlight_*.png"
-
-	menu_pixmap_style = "panel_*.png"
 
 	scrollbar = false
 }

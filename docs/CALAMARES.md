@@ -199,6 +199,20 @@ GRUB menu stayed unthemed through every round — full writeup in
 `docs/BRANDING.md`'s new GRUB section, since it's fundamentally a
 branding asset, not a Calamares-specific one.
 
+**Correction**: that `GRUB_TERMINAL_OUTPUT` fix alone wasn't sufficient
+— round 14's test still failed to render the theme. Real cause, found
+only by reading the actual installed target's `/etc/default/grub` and
+`grub.cfg` rather than re-reading `theme.txt` again: `grubcfg.conf`'s
+entire `defaults:` block (all 8 keys, not just the theme-related ones)
+was being silently skipped by the `grubcfg` module every round —
+requires `always_use_defaults: true` to actually apply, which this
+project's config never set. This is also a correction to this doc's own
+earlier claim ("verified... checked `src/modules/grubcfg/main.py`
+directly") — that check read the file but missed this exact gating
+condition; pulling the file fully verbatim the second time (rather than
+a summarized read) is what actually caught it. Full details in
+`docs/BRANDING.md`'s GRUB section.
+
 **Swap-dropdown crash investigation** (round 8's open item): compared
 the crashed and successful runs in round 12's `session.log` line by
 line. Selecting "Erase disk" alone always logs a clean 3-job queue
