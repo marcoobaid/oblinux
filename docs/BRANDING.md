@@ -265,8 +265,12 @@ out icon dimensions, and doesn't use `menu_pixmap_style` at all — only
 `desktop-image` + `selected_item_pixmap_style`. Trimmed to match
 (`panel_*.png` deleted, no longer referenced) — this turned out not to
 be the round 14 bug, but it's a legitimate reduction in unverified
-surface area worth keeping regardless. Awaiting round 15's build/boot
-test.
+surface area worth keeping regardless.
+
+**Round 15 confirmed working**: mark + wordmark render correctly on the
+Ink background, and the Primary highlight bar shows clearly on the
+selected menu entry — screenshot evidence, `docs/TESTING.md`. The
+installed-system GRUB theme is done.
 
 ## Next steps
 
@@ -275,10 +279,8 @@ test.
 3. ~~Plymouth theme~~ — done, see above.
 4. ~~GDM logo + background~~ — done, see above.
 5. ~~os-release `LOGO` asset~~ — done, see above.
-6. Installed-system GRUB theme — written, see above; round 14 failed to
-   render (real cause: `defaults:` block silently never applied, fixed
-   with `always_use_defaults: true`), awaiting round 15's build/boot
-   test.
+6. ~~Installed-system GRUB theme~~ — done, see above (confirmed
+   rendering, round 15).
 
 That's the full boot→login checklist (phase 1) plus its phase 2
 installed-system counterpart.

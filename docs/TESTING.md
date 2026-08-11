@@ -511,3 +511,19 @@ including the corrected earlier claim, in `docs/BRANDING.md` and
 
 Both fixes (the `theme.txt` trim and `always_use_defaults: true`) are
 in for round 15. Not yet re-verified by an actual build/boot.
+
+## 2026-08-10 — round 15: GRUB theme confirmed working
+
+ISO rebuilt with the `always_use_defaults: true` fix, install re-run.
+
+| Item | Result |
+|---|---|
+| Full install | Completes end to end |
+| GRUB theme | **Confirmed rendering** — mark + wordmark on Ink, Primary highlight bar on the selected entry, screenshot evidence |
+| Swap-dropdown crash | Did not reproduce this round |
+| General system check | All pieces functional |
+
+With this, all three items from the post-round-13 polish pass (zsh
+default shell, GRUB theme, swap-crash investigation/deprioritization)
+are closed out. Phase 2 (Calamares installer, boot→login branding
+including the installed system) is complete.

@@ -36,14 +36,13 @@ passwordless sudo, the zsh prompt, and the AUR bootstrap (`paru` builds successf
 first login) are all confirmed working. Three real bugs and two cosmetic issues were found
 and fixed along the way — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md).
 
-**First successful end-to-end Calamares install verified 2026-08-09** (VirtualBox, BIOS): a
-fresh disk erase-install completes cleanly, and the resulting system boots on its own —
-GRUB, Plymouth, GDM, and GNOME desktop login all confirmed working, `sudo` working for the
-installed user. Reaching that point took 5 rounds of install → log → fix testing (rounds
-8–12; `docs/TESTING.md`), each round's fix uncovering the next bug further into the install
-sequence. A few polish items remain open (installed GRUB menu is unthemed, default shell is
-bash not zsh, an intermittent installer crash on the swap option isn't yet root-caused) —
-see the Calamares checklist item below.
+**Phase 2 (Calamares installer) complete and verified as of 2026-08-10** (VirtualBox, BIOS):
+a fresh disk erase-install completes cleanly, and the resulting system boots on its own —
+GRUB (themed), Plymouth, GDM, GNOME desktop login, `sudo`, and zsh as the default shell all
+confirmed working. Reaching that point took 8 rounds of install → log → fix testing (rounds
+8–15; `docs/TESTING.md`), each round's fix uncovering the next issue further into the
+sequence. One known issue remains, deliberately deprioritized (an intermittent, non-blocking
+installer crash) — see the Calamares checklist item below.
 
 Built so far:
 
@@ -70,46 +69,33 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [x] **Calamares installer — successful end-to-end install verified, repeatably (rounds 12–13,
+- [x] **Calamares installer — Phase 2 complete, verified end to end (rounds 8–15,
       2026-08-09/10)**. `settings.conf`, all module configs (partitioning, users, bootloader,
-      live-artifact cleanup, etc.), and OBLinux branding all written, verified against
-      Calamares' own current source rather than guessed (see
-      [`docs/CALAMARES.md`](docs/CALAMARES.md)). `ckbcomp` built and published to
-      `oblinux_repo` alongside `calamares`/`paru`. Getting to a clean install took 5 rounds of
-      testing (8–12), one new bug surfacing after each fix as the install got further:
-      `shellprocess` placeholder token (`@@ROOT@@` vs. `${ROOT}`), `mount.conf`'s `options: bind`
-      needing to be a YAML list, `linux.preset` pointing at a live-only mkinitcpio config,
-      `packages.conf` missing the required `backend: pacman` key. Round 13 confirmed the last
-      follow-up (`/etc/calamares` no longer left on the installed system). Full log with root
-      causes: [`docs/TESTING.md`](docs/TESTING.md) (rounds 8–13). Closing out remaining polish
-      items next (none block a basic install):
-      - [x] **default shell — verified working (round 14)**: `users.conf` used a made-up
-        `userShell` key instead of the real nested `user.shell`; also added
-        `/etc/skel/.zshrc` so new users don't hit zsh's first-run wizard. Fixed a second,
-        adjacent bug found the same way (`passwordRequirements.nonempty` isn't a real key
-        either — confirmed by a warning present in every `session.log` so far — so no minimum
-        password length was actually being enforced; now `minLength: 1`). Round 14 confirms:
-        terminal opens straight to a working zsh prompt, no wizard.
-      - [ ] installed system's GRUB menu is unthemed — round 14's first fix attempt
-        (`GRUB_TERMINAL_OUTPUT: "console"`) **did not render**. Real cause found by inspecting
-        the installed target directly: `grubcfg.conf`'s entire `defaults:` block (all 8 keys)
-        was being silently skipped every round, gated behind an `always_use_defaults` flag this
-        project's config never set — an earlier "verified against source" claim here turned out
-        to be based on an incomplete read of that same source file. Fixed with
-        `always_use_defaults: true`, alongside a smaller `theme.txt` cleanup (two properties
-        that were only ever schema-verified, not confirmed working). Awaiting round 15. See
-        [`docs/BRANDING.md`](docs/BRANDING.md).
-      - [~] **known issue, deprioritized**: an intermittent installer crash right after choosing
-        the swap option (round 8, recurred round 12, reproduced twice back-to-back then not a
-        third time in round 14 — consistent with non-deterministic). Log analysis narrowed the
-        trigger to the swap-dropdown's recompute handler, and ruled out a known historical
-        Calamares bug in the same area ([PR #2392](https://github.com/calamares/calamares/pull/2392)/
-        [issue #2367](https://github.com/calamares/calamares/issues/2367) — GPT-specific, we use
-        MBR/`msdos`, and it's already merged into our Calamares version regardless). A raw
-        `SIGSEGV` doesn't reach `session.log`, so a real fix needs a `coredumpctl`-captured
-        backtrace from an actual reproduction — not chased for now since it auto-recovers and
-        doesn't block an install. Revisit if it starts happening more often or stops
-        auto-recovering.
+      live-artifact cleanup, etc.), and OBLinux branding (including the installed system's
+      themed GRUB menu) all written and confirmed working by real install/boot testing, not
+      just config review. `ckbcomp` built and published to `oblinux_repo` alongside
+      `calamares`/`paru`. A fresh erase-disk install completes cleanly and the resulting system
+      boots on its own — GRUB (themed), Plymouth, GDM, GNOME desktop login, `sudo`, and zsh as
+      the default shell all confirmed working.
+      - Getting to a clean install took 8 rounds of testing (8–15), each fix uncovering the next
+        issue further into the sequence: a `shellprocess` placeholder token, `mount.conf`'s
+        `options: bind` needing to be a YAML list, a live-only `linux.preset` left in place,
+        `packages.conf` missing `backend: pacman`, two wrong keys in `users.conf`
+        (`userShell`/`passwordRequirements.nonempty`), and `grubcfg.conf`'s entire `defaults:`
+        block silently never being applied (needs `always_use_defaults: true`, not obvious from
+        the schema alone).
+      - Full round-by-round log with root causes: [`docs/TESTING.md`](docs/TESTING.md).
+        Calamares-specific reasoning: [`docs/CALAMARES.md`](docs/CALAMARES.md). GRUB theme
+        writeup: [`docs/BRANDING.md`](docs/BRANDING.md).
+      - [~] **One known issue, deprioritized rather than blocking**: an intermittent installer
+        crash right after choosing the swap option (rounds 8, 12, 14 — non-deterministic,
+        auto-recovers, hasn't recurred since). Log analysis narrowed the trigger and ruled out a
+        known historical Calamares bug in the same area
+        ([PR #2392](https://github.com/calamares/calamares/pull/2392)/
+        [issue #2367](https://github.com/calamares/calamares/issues/2367) — GPT-specific, not
+        ours). A raw `SIGSEGV` doesn't reach `session.log`, so a real fix needs a
+        `coredumpctl`-captured backtrace from an actual reproduction — not chased since it
+        doesn't block an install. Revisit if it gets worse.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

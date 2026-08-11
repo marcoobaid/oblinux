@@ -213,6 +213,9 @@ condition; pulling the file fully verbatim the second time (rather than
 a summarized read) is what actually caught it. Full details in
 `docs/BRANDING.md`'s GRUB section.
 
+**Round 15 confirmed the fix** — GRUB theme renders correctly on the
+installed system. Phase 2 is complete.
+
 **Swap-dropdown crash investigation** (round 8's open item): compared
 the crashed and successful runs in round 12's `session.log` line by
 line. Selecting "Erase disk" alone always logs a clean 3-job queue
