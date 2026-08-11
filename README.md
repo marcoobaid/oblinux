@@ -36,13 +36,19 @@ passwordless sudo, the zsh prompt, and the AUR bootstrap (`paru` builds successf
 first login) are all confirmed working. Three real bugs and two cosmetic issues were found
 and fixed along the way — full log with root causes: [`docs/TESTING.md`](docs/TESTING.md).
 
-**Phase 2 (Calamares installer) complete and verified as of 2026-08-10** (VirtualBox, BIOS):
-a fresh disk erase-install completes cleanly, and the resulting system boots on its own —
+**Phase 2 (Calamares installer) complete and verified in VirtualBox as of 2026-08-10**: a
+fresh disk erase-install completes cleanly, and the resulting system boots on its own —
 GRUB (themed), Plymouth, GDM, GNOME desktop login, `sudo`, and zsh as the default shell all
 confirmed working. Reaching that point took 8 rounds of install → log → fix testing (rounds
 8–15; `docs/TESTING.md`), each round's fix uncovering the next issue further into the
 sequence. One known issue remains, deliberately deprioritized (an intermittent, non-blocking
 installer crash) — see the Calamares checklist item below.
+
+**First real-hardware Calamares attempt (2026-08-11, round 16) found a bug no VM test could
+have caught**: `unpackfs` failed outright — a VM-only quirk (VirtualBox mounts an attached ISO
+as virtual optical media) had been silently masking a real bug in how the live squashfs gets
+located on genuine USB boot media. Root-caused and fixed (`copytoram=n` on every live-boot
+entry); not yet re-verified on hardware. See the Calamares checklist item below.
 
 Built so far:
 
@@ -69,8 +75,8 @@ Built so far:
       `os-release` `LOGO=oblinux-logo` icon (`airootfs/usr/share/pixmaps/oblinux-logo.{svg,png}`) —
       GNOME Settings' About panel now shows the real mark instead of a generic fallback. Palette,
       mark rationale, and asset details are documented in [`docs/BRANDING.md`](docs/BRANDING.md).
-- [x] **Calamares installer — Phase 2 complete, verified end to end (rounds 8–15,
-      2026-08-09/10)**. `settings.conf`, all module configs (partitioning, users, bootloader,
+- [x] **Calamares installer — Phase 2 complete, verified end to end in VirtualBox (rounds
+      8–15, 2026-08-09/10)**. `settings.conf`, all module configs (partitioning, users, bootloader,
       live-artifact cleanup, etc.), and OBLinux branding (including the installed system's
       themed GRUB menu) all written and confirmed working by real install/boot testing, not
       just config review. `ckbcomp` built and published to `oblinux_repo` alongside
@@ -96,6 +102,15 @@ Built so far:
         ours). A raw `SIGSEGV` doesn't reach `session.log`, so a real fix needs a
         `coredumpctl`-captured backtrace from an actual reproduction — not chased since it
         doesn't block an install. Revisit if it gets worse.
+      - [ ] **First real-hardware attempt (round 16, 2026-08-11) failed at `unpackfs`** — a bug
+        no VM test could reach. `unpackfs.conf`'s hardcoded squashfs path only stays valid while
+        archiso's `copytoram` boot feature is off; `copytoram=auto` (the default, never
+        overridden until now) auto-enables when boot media isn't optical and there's enough
+        RAM — conditions a real USB stick on real hardware meets but a VirtualBox VM
+        structurally can't (an attached ISO mounts as *virtual optical* media there, blocking
+        auto-enable regardless of RAM). Fixed with `copytoram=n` set explicitly on every
+        live-boot kernel command line. Not yet re-verified on hardware. See
+        [`docs/TESTING.md`](docs/TESTING.md) round 16.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

@@ -527,3 +527,61 @@ With this, all three items from the post-round-13 polish pass (zsh
 default shell, GRUB theme, swap-crash investigation/deprioritization)
 are closed out. Phase 2 (Calamares installer, boot→login branding
 including the installed system) is complete.
+
+## 2026-08-11 — round 16: first real-hardware Calamares attempt, `copytoram` bug
+
+Same ISO, USB stick, physical laptop (BIOS boot per the `bootmnt.txt`/
+`lsblk.txt` diagnostics below, not VirtualBox) — the **first time**
+Calamares has been tested outside a VM. Failed immediately at job
+12/36, `unpackfs`:
+
+```
+ERROR: Installation failed: "Bad unpackfs configuration"
+details: The source filesystem "/run/archiso/bootmnt/oblinux/x86_64/airootfs.sfs" does not exist
+```
+
+Requested live diagnostics rather than guess (`lsblk`, `df -h`,
+`ls -la /run/archiso/bootmnt/`, `cat /proc/cmdline`) — confirmed
+`/run/archiso/bootmnt/` had no boot-media directory at all, just
+`airootfs`/`copytoram`/`cowspace`, and `df -h` showed
+`copytoram 23G 1.6G 22G 7% /run/archiso/copytoram` — the boot media's
+own mount was gone, its contents copied into RAM.
+
+### Root cause
+
+`copytoram`, an archiso boot feature this project never set explicitly
+(`mkinitcpio-archiso`'s hook script: `copytoram="$(getarg 'copytoram'
+'auto')"`). `auto` — the default — enables it when: (1) boot media isn't
+optical (`/dev/sr*`), (2) the squashfs is under 4 GiB, (3) available RAM
+exceeds the image size + 2 GiB. Once enabled, the archiso hook copies
+the squashfs into `/run/archiso/copytoram/` and **unmounts the original
+boot media**, which is exactly what `unpackfs.conf`'s hardcoded source
+path depends on staying mounted.
+
+This explains why 15 rounds of VM testing never hit it: VirtualBox
+mounts an attached ISO as a virtual **optical** drive (`/dev/sr0`),
+failing condition (1) regardless of how much RAM the VM has — copytoram
+could never auto-enable there. A real USB stick is a plain block device
+(`/dev/sda`), and this laptop has ample RAM, so all three conditions
+were met on the very first real-hardware attempt. `unpackfs.conf`'s own
+header comment claimed this path was "cross-checked against archiso's
+mkarchiso source" — true, but only ever exercised in the one
+environment (VM/optical) where the bug is structurally impossible to
+hit.
+
+### Fix
+
+`copytoram=n` added to all four live-boot kernel command lines (BIOS +
+UEFI, main + speech entries) — `syslinux/archiso_sys-linux.cfg`,
+`efiboot/loader/entries/01-archiso-linux.conf`,
+`efiboot/loader/entries/02-archiso-speech-linux.conf`. Forces
+deterministic behavior (boot media always stays mounted) instead of
+depending on `auto`'s environment-dependent heuristic. Applied to all
+entries, not just the main ones (unlike `quiet splash`) — this affects
+installer reliability generically, no accessibility angle to it. Trades
+away "safe to physically eject the USB after boot," which costs nothing
+for an install-focused live session where the media stays plugged in
+throughout anyway.
+
+Not yet re-verified by an actual install — next round should confirm
+this clears `unpackfs` on the same hardware.

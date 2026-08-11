@@ -214,7 +214,18 @@ a summarized read) is what actually caught it. Full details in
 `docs/BRANDING.md`'s GRUB section.
 
 **Round 15 confirmed the fix** — GRUB theme renders correctly on the
-installed system. Phase 2 is complete.
+installed system.
+
+**Round 16, first real-hardware attempt**: failed immediately at
+`unpackfs` — `unpackfs.conf`'s hardcoded source path only stays valid
+if archiso's `copytoram` boot feature is off, and it auto-enables under
+conditions a real USB stick on a well-specced laptop meets but a
+VirtualBox VM (attached ISO mounts as virtual optical media) structurally
+cannot. All 15 prior rounds were VM-only, so this was never reachable
+until now. Fixed at the boot-parameter level (`copytoram=n` on every
+live-boot entry) rather than in `unpackfs.conf` itself — full reasoning
+in `unpackfs.conf`'s own header comment and `docs/TESTING.md` round 16.
+Not yet re-verified.
 
 **Swap-dropdown crash investigation** (round 8's open item): compared
 the crashed and successful runs in round 12's `session.log` line by
