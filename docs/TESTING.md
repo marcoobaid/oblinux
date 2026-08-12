@@ -691,3 +691,10 @@ the end of install, well after any live-boot timing race would have
 resolved, so every future install gets a properly-trusted keyring
 regardless of how quickly the live session moved from boot to install.
 Not yet re-verified by an actual install.
+
+## 2026-08-12 — round 19: keyring fix confirmed (VM and laptop)
+
+ISO rebuilt with the `shellprocess-final.conf` keyring fix, tested on
+both platforms — VirtualBox and the same physical laptop from rounds
+16–18. Confirmed working on both: `pacman -Syu` succeeds on a freshly
+installed system with no manual intervention needed.

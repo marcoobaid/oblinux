@@ -51,7 +51,9 @@ there took two more rounds of real-hardware-only bugs no VM test could have reac
 handling structurally can't reach regardless of RAM) and round 17 (an invented `mount.conf`
 key, `extraMountsEfi`, that Calamares' actual source never reads at all — silently inert since
 round 8, only mattering once a real UEFI boot was attempted). Calamares is now verified working
-end-to-end on both BIOS (VM) and UEFI (real hardware). See the Calamares checklist item below.
+end-to-end on both BIOS (VM) and UEFI (real hardware). A follow-up pacman-keyring-trust bug
+(found post-round-18, fixed, confirmed round 19 on both platforms) is also closed out — see
+the Calamares checklist item below.
 
 Built so far:
 
@@ -118,16 +120,15 @@ Built so far:
         Fixed: `efivarfs` moved into `extraMounts` with `efi: true`. **Confirmed fixed in round
         18** — first successful real-hardware UEFI install, boot included. See
         [`docs/TESTING.md`](docs/TESTING.md) rounds 16–18.
-      - [ ] **Post-round-18: installed systems had an untrusted pacman keyring** — `pacman -Syu`
-        failing with signature errors on ordinary official packages (reported independently on
-        both the round 18 VM and the laptop). Root cause: `pacman-init.service` populates
-        keyring trust asynchronously at *live* boot and is known-slow; an install finishing
-        before it completes means `unpackfs` clones a partially-trusted keyring onto the
-        target, and since that service is masked on the installed system (intentionally —
-        live-only), nothing ever finishes the job afterward. Fixed:
-        `shellprocess-final.conf` now re-runs the keyring init/populate/refresh fresh at the
-        end of every install, best-effort. Not yet re-verified. See
-        [`docs/TESTING.md`](docs/TESTING.md), post-round-18.
+      - [x] **Installed systems had an untrusted pacman keyring — fixed, confirmed round 19**
+        (VM and laptop). `pacman -Syu` was failing with signature errors on ordinary official
+        packages. Root cause: `pacman-init.service` populates keyring trust asynchronously at
+        *live* boot and is known-slow; an install finishing before it completes means
+        `unpackfs` clones a partially-trusted keyring onto the target, and since that service
+        is masked on the installed system (intentionally — live-only), nothing ever finishes
+        the job afterward. Fixed: `shellprocess-final.conf` now re-runs the keyring
+        init/populate/refresh fresh at the end of every install, best-effort. See
+        [`docs/TESTING.md`](docs/TESTING.md), post-round-18/round 19.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes

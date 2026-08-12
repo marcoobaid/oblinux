@@ -284,5 +284,8 @@ partially-trusted keyring onto the target, and since
 `shellprocess-final.conf` now re-runs `pacman-key --init && pacman-key
 --populate archlinux && pacman -Sy --noconfirm archlinux-keyring` fresh
 at the end of every install (best-effort — network-dependent step
-allowed to fail without blocking the install). Full writeup:
-`docs/TESTING.md`, post-round-18.
+allowed to fail without blocking the install).
+
+**Round 19 confirmed the fix on both platforms** — VM and the same
+laptop, fresh install, `pacman -Syu` works immediately with no manual
+intervention. Full writeup: `docs/TESTING.md`, post-round-18/round 19.
