@@ -633,3 +633,17 @@ exactly: the `efivarfs` entry moved inside `extraMounts`, tagged
 Moved the `efivarfs` entry from the now-deleted `extraMountsEfi:` block
 into `extraMounts:`, with `efi: true` added. Not yet re-verified by an
 actual UEFI install.
+
+## 2026-08-11 — round 18: first successful real-hardware UEFI install
+
+Same laptop, `mount.conf`'s `efi: true` fix in place. Install completed
+successfully. USB stick removed, machine rebooted on its own — reached
+GDM, logged in, GNOME desktop confirmed working.
+
+This closes out the real-hardware testing arc that started at round 16:
+`copytoram` (round 16, fixed and confirmed round 17) and the
+`extraMountsEfi` dead-config bug (round 17, fixed and confirmed this
+round) were both real bugs that 16 rounds of VM/BIOS-only testing
+structurally could not have found. With this, Calamares has now been
+verified working end-to-end on both BIOS (VM) and UEFI (real hardware)
+targets.

@@ -265,5 +265,9 @@ marked `efi: true`, pruned at runtime if `firmwareType` isn't `"efi"`.
 Silently inert since round 8, on every platform, since nothing before
 this round ever needed `/sys/firmware/efi/efivars` mounted. Confirmed
 against Calamares' own real `mount.conf` example, not inferred from the
-Python alone. Fixed; not yet re-verified. Full writeup:
-`docs/TESTING.md` round 17.
+Python alone. Fixed.
+
+**Round 18 confirmed the fix** — first successful real-hardware UEFI
+install, boot included (USB removed, reached GDM, logged into GNOME).
+Calamares is now verified working end-to-end on both BIOS (VM) and UEFI
+(real hardware). Full writeup: `docs/TESTING.md` rounds 16-18.

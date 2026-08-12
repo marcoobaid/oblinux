@@ -44,13 +44,14 @@ confirmed working. Reaching that point took 8 rounds of install → log → fix 
 sequence. One known issue remains, deliberately deprioritized (an intermittent, non-blocking
 installer crash) — see the Calamares checklist item below.
 
-**Real-hardware Calamares testing (2026-08-11) is finding a steady stream of bugs no VM test
-could reach**, each needing hardware to surface: round 16's `unpackfs` failure (`copytoram`
-auto-enabling on real USB media, a state VirtualBox's virtual-optical-media handling can't
-reach regardless of RAM — fixed with `copytoram=n`) was confirmed fixed in round 17, which then
-hit a second bug on this laptop's first real UEFI boot attempt — an invented `mount.conf` key
-(`extraMountsEfi`) that Calamares' actual source never reads at all, silently inert since round
-8. Fixed; not yet re-verified. See the Calamares checklist item below.
+**First successful real-hardware UEFI install verified 2026-08-11 (round 18)**: USB stick
+removed after install, machine rebooted on its own, reached GDM, logged into GNOME. Getting
+there took two more rounds of real-hardware-only bugs no VM test could have reached — round 16
+(`copytoram` auto-enabling on real USB media, a state VirtualBox's virtual-optical-media
+handling structurally can't reach regardless of RAM) and round 17 (an invented `mount.conf`
+key, `extraMountsEfi`, that Calamares' actual source never reads at all — silently inert since
+round 8, only mattering once a real UEFI boot was attempted). Calamares is now verified working
+end-to-end on both BIOS (VM) and UEFI (real hardware). See the Calamares checklist item below.
 
 Built so far:
 
@@ -108,14 +109,15 @@ Built so far:
         USB media, a state VirtualBox's virtual-optical-media handling structurally can't reach
         regardless of RAM. Fixed with `copytoram=n` on every live-boot entry. **Confirmed fixed
         in round 17** (VM re-test, no issues).
-      - [ ] **Round 17's first real UEFI attempt failed at `bootloader`** — `grub-install`
+      - [x] **Round 17's first real UEFI attempt failed at `bootloader`** — `grub-install`
         couldn't register the EFI boot entry ("EFI variables are not supported on this system").
         Root cause: `mount.conf` had an invented `extraMountsEfi:` key that
         `src/modules/mount/main.py` never actually reads — the real mechanism is a single
         `extraMounts` list with individual entries marked `efi: true`. Silently inert since
         round 8, on every platform; never mattered until this round's first real UEFI boot.
-        Fixed: `efivarfs` moved into `extraMounts` with `efi: true`. Not yet re-verified. See
-        [`docs/TESTING.md`](docs/TESTING.md) rounds 16–17.
+        Fixed: `efivarfs` moved into `extraMounts` with `efi: true`. **Confirmed fixed in round
+        18** — first successful real-hardware UEFI install, boot included. See
+        [`docs/TESTING.md`](docs/TESTING.md) rounds 16–18.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes
