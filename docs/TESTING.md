@@ -705,11 +705,11 @@ installed system with no manual intervention needed.
 (`SigLevel = Required TrustedOnly`); Chaotic-AUR wired in as a repo.
 Full reasoning and setup: [`docs/PACKAGE_SIGNING.md`](PACKAGE_SIGNING.md).
 
-Two things need to happen before this can be build-tested:
-1. The existing `oblinux_repo` packages (built before the signing key
-   existed) need re-signing and republishing via `update_repo.sh`.
-2. The build machine needs a one-time `pacman-key --add`/`--lsign-key`
-   for the new `oblinux-repo` key — `pacstrap` verifies against the
-   *build machine's own* keyring, not anything baked into the profile.
-
-Both documented in `docs/PACKAGE_SIGNING.md`. Not yet build/boot tested.
+Two prerequisites, both completed same day: `oblinux_repo`'s three
+packages re-signed and republished via `update_repo.sh` (commit
+`85a2258`), and the build machine's one-time `pacman-key --add`/
+`--lsign-key` for the new `oblinux-repo` key. Details in
+`docs/PACKAGE_SIGNING.md`. Not yet build/boot tested — next round should
+confirm `pacstrap` resolves the signed `oblinux_repo` packages
+correctly, and that the live/installed-system keyring population works
+as designed.

@@ -77,10 +77,9 @@ Built so far:
       (community-maintained prebuilt AUR packages) wired in as a repo, verified against its own
       real keyring/mirrorlist packages rather than reconstructed. Full writeup, including the
       signing key's details and backup locations:
-      [`docs/PACKAGE_SIGNING.md`](docs/PACKAGE_SIGNING.md). **Not yet build-tested** — the
-      existing `oblinux_repo` packages still need re-signing/republishing, and the build
-      machine needs a one-time keyring trust setup, both documented there, before the next
-      `mkarchiso` build will succeed.
+      [`docs/PACKAGE_SIGNING.md`](docs/PACKAGE_SIGNING.md). Both prerequisites done same day —
+      `oblinux_repo`'s packages re-signed/republished, build machine's one-time keyring trust
+      set up. **Not yet build-tested** — next `mkarchiso` build is the real test.
 - [x] **Visual branding, boot→login checklist complete** — logo mark
       (`docs/branding/oblinux-mark*.svg`), boot splash (`syslinux/splash.png`), Plymouth boot theme
       (`airootfs/usr/share/plymouth/themes/oblinux/`, the amber spark orbits the ring during boot),

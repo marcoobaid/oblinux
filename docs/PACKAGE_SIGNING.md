@@ -151,10 +151,18 @@ just backed by a file already on disk instead of a separate package
 install. Not yet added to `packages.x86_64` — that's a curated-app-list
 decision for later, this just makes the repo available and trusted.
 
-## Not yet done
+## Status
 
-- Existing `oblinux_repo` packages need re-signing and republishing (see
-  above) — required before the next `mkarchiso` build will succeed.
-- Build machine needs the one-time `pacman-key --add`/`--lsign-key` setup
-  above before the next build.
-- None of this has been through an actual build/boot test yet.
+Both prerequisites are done as of 2026-08-12: `oblinux_repo`'s three
+packages were re-signed and republished via `update_repo.sh`
+(`calamares-3.4.2-2-x86_64.pkg.tar.zst.sig`,
+`ckbcomp-1.248-1-any.pkg.tar.zst.sig`, `paru-2.1.0-2-x86_64.pkg.tar.zst.sig`,
+plus the signed database — commit `85a2258`), and the build machine's own
+`pacman-key --add`/`--lsign-key` for `oblinux-repo` is done.
+
+**Not yet done**: none of this has actually been through a build/boot
+test yet — next `mkarchiso` build is the real test, both for whether
+`pacstrap` resolves the now-signed `oblinux_repo` packages correctly and
+whether the live/installed-system keyring population (the
+`pacman-init.service` drop-in, the `shellprocess-final.conf` step) works
+as designed.
