@@ -21,8 +21,13 @@ single AUR package to build, not a deep transitive AUR chain.
   rather than building locally on the build machine only — future custom
   OBLinux packages can be pushed here and pulled by already-installed
   systems).
-- `packages.x86_64` — `calamares` and `paru` added directly, same as any
-  other package, now that they resolve via `oblinux_repo`.
+- `packages.x86_64` — `calamares`, `paru`, and `ckbcomp` added directly,
+  same as any other package, now that they resolve via `oblinux_repo`.
+- `airootfs/usr/share/pacman/keyrings/oblinux-repo.{gpg,-trusted}` +
+  a `pacman-init.service` drop-in (live session) and a `shellprocess-final`
+  step (installed systems) — how the repo's signing key gets trusted
+  everywhere it needs to be. Same mechanism, same reasoning, as
+  Chaotic-AUR's; see [`docs/PACKAGE_SIGNING.md`](PACKAGE_SIGNING.md).
 
 ## Build/publish workflow
 
@@ -50,12 +55,12 @@ publish cycle before it even reaches a test ISO build, instead of just
 editing the file and rebuilding directly. `oblinux_repo` is for things that
 actually need compiling.
 
-## Signing — deferred, not skipped
+## Signing
 
-Packages are currently unsigned (`SigLevel = Optional TrustedOnly`).
-Confirmed this doesn't create rework later: signing is a layer added on top
-(generate a key, `repo-add -s`, seed trust on the consuming side) — it
-doesn't require redoing the repo structure or any package already built.
-Deferred for now since it adds real setup ceremony (key generation, secure
-private-key backup, trust-seeding) that isn't needed to get Calamares
-working. TODO before shipping this more broadly.
+Done as of 2026-08-12 — `SigLevel = Required TrustedOnly`, packages and
+the repo database both signed. Turned out exactly as anticipated when this
+was deferred: adding it later didn't require redoing the repo structure or
+any package already published, just a signing layer on top. Full writeup
+— key generation, backup, the signing workflow, and how trust gets baked
+into the ISO for both the live session and installed systems — in
+[`docs/PACKAGE_SIGNING.md`](PACKAGE_SIGNING.md).

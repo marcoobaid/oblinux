@@ -698,3 +698,18 @@ ISO rebuilt with the `shellprocess-final.conf` keyring fix, tested on
 both platforms — VirtualBox and the same physical laptop from rounds
 16–18. Confirmed working on both: `pacman -Syu` succeeds on a freshly
 installed system with no manual intervention needed.
+
+## 2026-08-12 — infrastructure: package signing + Chaotic-AUR
+
+`oblinux_repo` switched from unsigned to signed
+(`SigLevel = Required TrustedOnly`); Chaotic-AUR wired in as a repo.
+Full reasoning and setup: [`docs/PACKAGE_SIGNING.md`](PACKAGE_SIGNING.md).
+
+Two things need to happen before this can be build-tested:
+1. The existing `oblinux_repo` packages (built before the signing key
+   existed) need re-signing and republishing via `update_repo.sh`.
+2. The build machine needs a one-time `pacman-key --add`/`--lsign-key`
+   for the new `oblinux-repo` key — `pacstrap` verifies against the
+   *build machine's own* keyring, not anything baked into the profile.
+
+Both documented in `docs/PACKAGE_SIGNING.md`. Not yet build/boot tested.

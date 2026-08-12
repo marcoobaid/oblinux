@@ -67,11 +67,20 @@ Built so far:
 - [x] AUR support via `paru`, prebuilt and installed like any other package (see below) —
       replaces an earlier first-login-bootstrap approach that built it from source on first login
 - [x] Custom package repo (`oblinux_repo`, GitHub Pages) wired into `pacman.conf` (build-time)
-      and `airootfs/etc/pacman.conf` (persists to the live/installed system), for `calamares` and
-      `paru` (both AUR-only) plus future custom OBLinux packages. **Verified working end to end** —
-      both packages built, published, and confirmed resolving on a built/booted system. Details,
-      and why Calamares' own config is deliberately *not* packaged this way, in
-      [`docs/CUSTOM_REPO.md`](docs/CUSTOM_REPO.md).
+      and `airootfs/etc/pacman.conf` (persists to the live/installed system), for `calamares`,
+      `paru`, `ckbcomp` (all AUR-only) plus future custom OBLinux packages. **Verified working
+      end to end** — packages built, published, and confirmed resolving on a built/booted
+      system. Details, and why Calamares' own config is deliberately *not* packaged this way,
+      in [`docs/CUSTOM_REPO.md`](docs/CUSTOM_REPO.md).
+- [ ] **Package signing + Chaotic-AUR (2026-08-12)** — `oblinux_repo` switched from unsigned
+      (`SigLevel = Optional`) to signed (`Required TrustedOnly`); Chaotic-AUR
+      (community-maintained prebuilt AUR packages) wired in as a repo, verified against its own
+      real keyring/mirrorlist packages rather than reconstructed. Full writeup, including the
+      signing key's details and backup locations:
+      [`docs/PACKAGE_SIGNING.md`](docs/PACKAGE_SIGNING.md). **Not yet build-tested** — the
+      existing `oblinux_repo` packages still need re-signing/republishing, and the build
+      machine needs a one-time keyring trust setup, both documented there, before the next
+      `mkarchiso` build will succeed.
 - [x] **Visual branding, boot→login checklist complete** — logo mark
       (`docs/branding/oblinux-mark*.svg`), boot splash (`syslinux/splash.png`), Plymouth boot theme
       (`airootfs/usr/share/plymouth/themes/oblinux/`, the amber spark orbits the ring during boot),
