@@ -647,3 +647,47 @@ round) were both real bugs that 16 rounds of VM/BIOS-only testing
 structurally could not have found. With this, Calamares has now been
 verified working end-to-end on both BIOS (VM) and UEFI (real hardware)
 targets.
+
+## 2026-08-11 — post-round-18: stale/untrusted pacman keyring on installed systems
+
+Reported independently on both the round 18 VM and the laptop: `pacman
+-Syu` failing with `signature from "Felix Yan <...>" is invalid` (later
+`is unknown trust`) on an otherwise-ordinary official package (`perl`).
+Not package corruption — a pacman keyring trust problem.
+
+Ruled out simple staleness first: `pacman -Sy --needed archlinux-keyring`
+reported the package already at the latest available version
+("archlinux-keyring-20260727-1 is up to date — skipping"), yet the
+error persisted (now as "unknown trust" rather than "invalid"). That
+means the keys were present in the installed `archlinux-keyring`
+package's files but never actually imported into pacman's local trust
+database (`/etc/pacman.d/gnupg`) — a populate/trust problem, not a
+"need a newer package" problem.
+
+Root cause, consistent with a real, documented archiso issue
+([GitLab archiso #191](https://gitlab.archlinux.org/archlinux/archiso/-/issues/191),
+`pacman-init.service` taking 1-2s per key to populate/trust, tens of
+keys total): `pacman-init.service` populates keyring trust
+asynchronously at *live* boot. If Calamares is launched and an install
+finishes before that service completes, `unpackfs` clones a
+partially-trusted keyring onto the target — and since
+`pacman-init.service` is itself masked on the installed system
+(intentionally, it's live-only — see `shellprocess-final.conf`'s
+existing cleanup reasoning), nothing ever finishes that job afterward.
+The installed system is stuck with whatever trust state existed at the
+moment `unpackfs` ran.
+
+**Confirmed fixed by hand** on the affected VM:
+```
+pacman-key --init && pacman-key --populate archlinux && pacman -Sy --noconfirm archlinux-keyring
+```
+
+**Fix applied to the ISO**: the same three commands added to
+`shellprocess-final.conf`'s post-install cleanup, each individually
+best-effort (`-` prefixed) so a lack of internet at that exact moment in
+the install doesn't block it — `--populate` needs no network (imports
+from files already on disk), only the final `-Sy` does. Runs fresh, at
+the end of install, well after any live-boot timing race would have
+resolved, so every future install gets a properly-trusted keyring
+regardless of how quickly the live session moved from boot to install.
+Not yet re-verified by an actual install.

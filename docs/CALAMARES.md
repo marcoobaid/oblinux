@@ -271,3 +271,18 @@ Python alone. Fixed.
 install, boot included (USB removed, reached GDM, logged into GNOME).
 Calamares is now verified working end-to-end on both BIOS (VM) and UEFI
 (real hardware). Full writeup: `docs/TESTING.md` rounds 16-18.
+
+**Post-round-18: installed systems had an untrusted pacman keyring**
+(reported independently on both the round 18 VM and the laptop —
+`pacman -Syu` failing with signature errors on ordinary official
+packages). Root cause: `pacman-init.service` populates keyring trust
+asynchronously at *live* boot and is known-slow (archiso GitLab #191);
+an install finishing before it completes means `unpackfs` clones a
+partially-trusted keyring onto the target, and since
+`pacman-init.service` is masked on the installed system (intentionally
+— it's live-only), nothing ever finishes that job afterward. Fixed:
+`shellprocess-final.conf` now re-runs `pacman-key --init && pacman-key
+--populate archlinux && pacman -Sy --noconfirm archlinux-keyring` fresh
+at the end of every install (best-effort — network-dependent step
+allowed to fail without blocking the install). Full writeup:
+`docs/TESTING.md`, post-round-18.

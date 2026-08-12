@@ -118,6 +118,16 @@ Built so far:
         Fixed: `efivarfs` moved into `extraMounts` with `efi: true`. **Confirmed fixed in round
         18** — first successful real-hardware UEFI install, boot included. See
         [`docs/TESTING.md`](docs/TESTING.md) rounds 16–18.
+      - [ ] **Post-round-18: installed systems had an untrusted pacman keyring** — `pacman -Syu`
+        failing with signature errors on ordinary official packages (reported independently on
+        both the round 18 VM and the laptop). Root cause: `pacman-init.service` populates
+        keyring trust asynchronously at *live* boot and is known-slow; an install finishing
+        before it completes means `unpackfs` clones a partially-trusted keyring onto the
+        target, and since that service is masked on the installed system (intentionally —
+        live-only), nothing ever finishes the job afterward. Fixed:
+        `shellprocess-final.conf` now re-runs the keyring init/populate/refresh fresh at the
+        end of every install, best-effort. Not yet re-verified. See
+        [`docs/TESTING.md`](docs/TESTING.md), post-round-18.
 - [ ] Default application package list (user-controlled — TBD)
 
 ## Implementation notes
