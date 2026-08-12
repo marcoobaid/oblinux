@@ -709,7 +709,24 @@ Two prerequisites, both completed same day: `oblinux_repo`'s three
 packages re-signed and republished via `update_repo.sh` (commit
 `85a2258`), and the build machine's one-time `pacman-key --add`/
 `--lsign-key` for the new `oblinux-repo` key. Details in
-`docs/PACKAGE_SIGNING.md`. Not yet build/boot tested — next round should
-confirm `pacstrap` resolves the signed `oblinux_repo` packages
-correctly, and that the live/installed-system keyring population works
-as designed.
+`docs/PACKAGE_SIGNING.md`.
+
+## 2026-08-12 — round 20: package signing + Chaotic-AUR confirmed (VM and laptop)
+
+ISO rebuilt with both prerequisites in place, installed and tested on
+both VirtualBox and the same physical laptop from rounds 16–19.
+
+| Item | Result |
+|---|---|
+| Install (both platforms) | Completes successfully, no issues |
+| Boot to desktop (both platforms) | Confirmed working |
+| `oblinux_repo` | Functional — reinstalled a package successfully (now signature-verified, not just present) |
+| `chaotic-aur` | Functional — installed a known-existing package successfully |
+
+Closes out the package signing + Chaotic-AUR infrastructure change:
+`pacstrap` correctly resolved the now-signed `oblinux_repo` packages at
+build time (confirming the build machine's `pacman-key --add`/
+`--lsign-key` step worked), and both the live-session
+(`pacman-init.service` drop-in) and installed-system
+(`shellprocess-final.conf`) keyring population mechanisms worked as
+designed on both platforms, with no manual intervention needed.

@@ -160,9 +160,13 @@ packages were re-signed and republished via `update_repo.sh`
 plus the signed database — commit `85a2258`), and the build machine's own
 `pacman-key --add`/`--lsign-key` for `oblinux-repo` is done.
 
-**Not yet done**: none of this has actually been through a build/boot
-test yet — next `mkarchiso` build is the real test, both for whether
-`pacstrap` resolves the now-signed `oblinux_repo` packages correctly and
-whether the live/installed-system keyring population (the
-`pacman-init.service` drop-in, the `shellprocess-final.conf` step) works
-as designed.
+**Confirmed working (round 20, `docs/TESTING.md`)**: built, installed,
+and booted successfully on both VirtualBox and real hardware.
+`pacstrap` resolved the now-signed `oblinux_repo` packages correctly at
+build time. On both platforms, post-boot: `oblinux_repo` verified
+functional (reinstalled a package, now signature-checked rather than
+just present), `chaotic-aur` verified functional (installed a
+known-existing package). No manual keyring intervention needed on
+either platform — the `pacman-init.service` drop-in (live session) and
+`shellprocess-final.conf` step (installed system) both worked as
+designed.

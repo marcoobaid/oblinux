@@ -72,14 +72,14 @@ Built so far:
       end to end** — packages built, published, and confirmed resolving on a built/booted
       system. Details, and why Calamares' own config is deliberately *not* packaged this way,
       in [`docs/CUSTOM_REPO.md`](docs/CUSTOM_REPO.md).
-- [ ] **Package signing + Chaotic-AUR (2026-08-12)** — `oblinux_repo` switched from unsigned
-      (`SigLevel = Optional`) to signed (`Required TrustedOnly`); Chaotic-AUR
-      (community-maintained prebuilt AUR packages) wired in as a repo, verified against its own
-      real keyring/mirrorlist packages rather than reconstructed. Full writeup, including the
-      signing key's details and backup locations:
-      [`docs/PACKAGE_SIGNING.md`](docs/PACKAGE_SIGNING.md). Both prerequisites done same day —
-      `oblinux_repo`'s packages re-signed/republished, build machine's one-time keyring trust
-      set up. **Not yet build-tested** — next `mkarchiso` build is the real test.
+- [x] **Package signing + Chaotic-AUR — verified working (round 20, 2026-08-12)**.
+      `oblinux_repo` switched from unsigned (`SigLevel = Optional`) to signed
+      (`Required TrustedOnly`); Chaotic-AUR (community-maintained prebuilt AUR packages) wired
+      in as a repo, verified against its own real keyring/mirrorlist packages rather than
+      reconstructed. Built, installed, and booted successfully on both VirtualBox and real
+      hardware — both repos confirmed functional post-boot on both platforms (reinstalled a
+      package from `oblinux_repo`, installed one from `chaotic-aur`), no manual keyring
+      intervention needed. Full writeup: [`docs/PACKAGE_SIGNING.md`](docs/PACKAGE_SIGNING.md).
 - [x] **Visual branding, boot→login checklist complete** — logo mark
       (`docs/branding/oblinux-mark*.svg`), boot splash (`syslinux/splash.png`), Plymouth boot theme
       (`airootfs/usr/share/plymouth/themes/oblinux/`, the amber spark orbits the ring during boot),
