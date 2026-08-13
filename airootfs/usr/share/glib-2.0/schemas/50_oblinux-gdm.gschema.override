@@ -29,3 +29,35 @@ color-shading-type='solid'
 
 [org.gnome.login-screen]
 logo='/usr/share/pixmaps/oblinux-logo-text-dark.svg'
+
+# THEMING.md items 2+3: accent color and default fonts. Not overridden
+# per-user by GDM's dconf profile (unlike background), so these apply
+# everywhere including the GDM greeter — a deliberate, cohesive choice
+# (unlike the wallpaper, there's no fragility/gresource concern here,
+# it's schema keys the same way accent-color/fonts always work).
+#
+# accent-color: enum verified verbatim against gsettings-desktop-schemas
+# upstream source (org.gnome.desktop.interface accent-color) — valid
+# values are blue/teal/green/yellow/orange/red/pink/purple/slate;
+# 'orange' is the closest preset to Amber (#d68a3c).
+#
+# font-name / document-font-name: Inter (inter-font package, added to
+# packages.x86_64), registered family confirmed via the package's own
+# file list (usr/share/fonts/inter/Inter.ttc — the static family used
+# here rather than the variable "Inter Variable" instance).
+#
+# monospace-font-name: JetBrains Mono, Nerd Font-patched
+# (ttf-jetbrains-mono-nerd, added to packages.x86_64) — needed for
+# starship/eza's icon glyphs to render instead of missing-glyph boxes.
+# Uses the "Mono" build variant specifically (not the plain or "Propo"
+# variant) so icon glyphs occupy a single fixed-width cell and don't
+# break terminal column alignment. Exact registered family string is
+# best-confidence from Nerd Fonts' standard naming convention, not
+# confirmed from the package file list alone (font names live in the
+# file's internal metadata) — verify with `fc-list | grep -i
+# jetbrains` after the next build and correct this value if it differs.
+[org.gnome.desktop.interface]
+accent-color='orange'
+font-name='Inter 11'
+document-font-name='Inter 11'
+monospace-font-name='JetBrainsMono Nerd Font Mono 11'

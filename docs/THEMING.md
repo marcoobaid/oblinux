@@ -119,25 +119,39 @@ Full verification of both mechanisms, not just visual inspection:
 
 This item is closed out.
 
-### 2. GTK theme — accent color — not started
+### 2. GTK theme — accent color — implemented, not yet build/boot tested
 
-Set the OS default accent color to the closest native preset to Amber.
-No new repo — this is now a single dconf/gsettings default, not a theme
-package. Sequenced early since it's low-effort and immediately visible
-across every app once set — good to have in place before judging how
-the icon theme and shell styling look alongside it.
+`org.gnome.desktop.interface accent-color='orange'`, added to the
+gschema override. Enum verified verbatim against
+`gsettings-desktop-schemas` upstream source (`org.gnome.desktop.
+interface`'s `accent-color` key) — valid values are
+blue/teal/green/yellow/orange/red/pink/purple/slate; `orange` is the
+closest preset to Amber (`#d68a3c`). No new repo, no theme package —
+confirms the plan's assumption that this would just be a dconf default.
+Not scoped to the desktop session only: since GDM's dconf profile only
+overrides background keys (item 1), this falls through to the same
+compiled default for the GDM greeter too — a deliberate, cohesive
+choice, unlike the wallpaper split.
 
-### 3. Fonts — desktop UI + terminal — not started
+### 3. Fonts — desktop UI + terminal — implemented, not yet build/boot tested
 
-Desktop UI default: **Inter**. Terminal/monospace default: **JetBrains
-Mono Nerd Font**. Browser/reading legibility via system-wide fontconfig
-fallback defaults, not Firefox-specific settings. Sequenced right after
-the accent-color item and *before* fastfetch/zsh prompt (items 6 and 7
-below) on purpose: those two depend on a Nerd Font actually being the
-default for their icon glyphs to render at all, so the font decision
-needs to land first, not be guessed around. No new repo — Arch already
-packages Nerd Fonts (exact package names to confirm when this item
-starts, not assumed here) plus a small fontconfig default-family config.
+Desktop UI default: **Inter** (`inter-font` package — confirmed on
+Arch, ships the static `Inter` family plus a separate `Inter Variable`
+instance; used the static one). Terminal/monospace default:
+**JetBrains Mono Nerd Font**, specifically the **Mono** build variant
+(`ttf-jetbrains-mono-nerd` package — confirmed on Arch) rather than the
+plain or "Propo" variant, so icon glyphs (starship, eza) occupy a fixed
+single-column width instead of breaking terminal alignment. Both added
+to `packages.x86_64`. Wired via `org.gnome.desktop.interface`
+(`font-name`, `document-font-name`, `monospace-font-name` — same
+gschema override as item 2) and `/etc/fonts/local.conf` (system-wide
+fontconfig `sans-serif`/`monospace` aliases, `binding="strong"` per
+ArchWiki's own guidance — fontconfig 2.18+'s `48-guessfamily.conf`
+preset silently overrides a plain/weak alias otherwise). The exact
+registered family string for the Nerd Font Mono variant is
+best-confidence from Nerd Fonts' standard naming convention, not
+confirmed from the package file listing alone — needs `fc-list | grep
+-i jetbrains` after the next build to confirm or correct.
 
 ### 4. Icon theme — not started
 

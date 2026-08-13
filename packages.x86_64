@@ -234,6 +234,14 @@ noto-fonts
 noto-fonts-emoji
 ttf-liberation
 
+## Fonts — OBLinux defaults (THEMING.md item 3): Inter for desktop UI,
+## JetBrains Mono Nerd Font for terminal/monospace (Nerd Font patching
+## is what gives starship/eza their icon glyphs). Wired in via
+## org.gnome.desktop.interface (see the gschema override) and
+## /etc/fonts/local.conf.
+inter-font
+ttf-jetbrains-mono-nerd
+
 ## Printing — GNOME Settings' printer panel needs cups running;
 ## avahi/nss-mdns enable driverless network-printer discovery.
 avahi
