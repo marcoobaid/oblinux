@@ -135,7 +135,6 @@ gnome-control-center
 gnome-keyring
 gnome-menus
 gnome-shell
-gnome-terminal
 gnome-themes-extra
 gvfs
 gvfs-gphoto2
@@ -169,3 +168,90 @@ plymouth
 calamares
 paru
 ckbcomp
+
+## OBLinux: default apps — decided 2026-08-13, see docs/DEFAULT_APPS.md.
+## Web browser.
+firefox
+
+## Terminal — Ptyxis (modern, GPU-accelerated, actively developed;
+## replaces gnome-terminal, which is feature-frozen upstream).
+ptyxis
+
+## Core GNOME apps for a functional, appealing out-of-the-box desktop.
+gnome-calendar
+gnome-calculator
+gnome-characters
+gnome-clocks
+gnome-contacts
+gnome-disk-utility
+gnome-firmware
+gnome-online-accounts
+gnome-software
+gnome-system-monitor
+gnome-text-editor
+gnome-weather
+baobab
+eog
+evince
+file-roller
+fwupd
+sushi
+totem
+
+## Shell experience — zsh is already the default shell; these give it a
+## modern out-of-the-box feel (autosuggestions/syntax-highlighting/prompt)
+## without a full framework like oh-my-zsh.
+starship
+zsh-autosuggestions
+zsh-syntax-highlighting
+
+## Modern CLI tools for a "solid terminal" out of the box.
+bat
+btop
+eza
+fd
+fzf
+ripgrep
+zoxide
+
+## CLI archive/download tools — gaps in the base list (only
+## squashfs-tools was present).
+p7zip
+unzip
+wget
+zip
+
+## Codecs — full gst-plugins set (not Fedora's conservative subset), so
+## common audio/video formats just work after install.
+gst-libav
+gst-plugins-bad
+gst-plugins-base
+gst-plugins-good
+gst-plugins-ugly
+
+## Fonts — base ISO shipped zero desktop fonts before this.
+noto-fonts
+noto-fonts-emoji
+ttf-liberation
+
+## Printing — GNOME Settings' printer panel needs cups running;
+## avahi/nss-mdns enable driverless network-printer discovery.
+avahi
+cups
+cups-pdf
+nss-mdns
+
+## Bluetooth — GNOME Settings' Bluetooth panel needs the daemon present.
+bluez
+bluez-utils
+
+## Firewall — ufw over firewalld: simpler mental model, friendlier to
+## users switching from macOS/Windows.
+gufw
+ufw
+
+## Flatpak — portals (xdg-desktop-portal/-gnome, above) were already
+## present; gnome-software (above) is the GUI front-end. Flathub remote
+## still needs adding as a post-install step, not a package — see
+## docs/DEFAULT_APPS.md.
+flatpak
