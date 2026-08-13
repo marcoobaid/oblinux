@@ -47,7 +47,7 @@ per item as that work starts.
 Order chosen for dependency reasons (noted per item), not just the order
 first listed.
 
-### 1. Default wallpaper(s) — implemented, not yet build/boot tested
+### 1. Default wallpaper(s) — done, VM-confirmed 2026-08-13
 
 Three-round design process (all SVG, built on the real
 `docs/branding/oblinux-mark.svg` mark, amber kept confined to the mark's
@@ -94,13 +94,30 @@ the pacman-hook approach ever becomes worth the maintenance cost.
 The mark+wordmark lockup already shown at GDM login (`org.gnome.
 login-screen logo`, `oblinux-logo-text-dark.svg`) is unrelated to this
 item — it predates this round and wasn't touched. Its exact on-screen
-position (bottom-center, like Ubuntu's greeter) is *not* confirmed for
-vanilla GNOME — Ubuntu heavily themes its own greeter, so this needs a
-real look at the built ISO, not an assumption.
+position (bottom-center, like Ubuntu's greeter) was the one thing left
+unverified for vanilla GNOME — **confirmed 2026-08-13 via VM
+screenshot**: it does land bottom-center, same as Ubuntu.
 
-Not yet run through a real `mkarchiso` build/boot round — needs that,
-same as every other phase in this project, before this item is fully
-closed out.
+**VM-confirmed 2026-08-13**: built, installed, booted with no issues.
+Full verification of both mechanisms, not just visual inspection:
+- `gsettings get org.gnome.desktop.background picture-uri` on the
+  desktop session correctly returns
+  `/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg`.
+- `DCONF_PROFILE=gdm gsettings get org.gnome.desktop.background
+  {primary-color,secondary-color,color-shading-type}` returns exactly
+  `#151a22` / `#2c3a4e` / `vertical` — the GDM-specific dconf
+  profile/database split is compiling and taking effect correctly.
+- `gschemas.compiled` and `/etc/dconf/db/gdm` are both freshly
+  timestamped from the build, confirming schema/dconf recompilation
+  happens automatically during `mkarchiso` with no extra
+  `customize_airootfs.sh` build hook needed — resolves what had been an
+  open assumption.
+- The GDM gradient reads as visually subtle in a screenshot (Ink and
+  Slate are close in value by design) — checked and confirmed this is
+  the gradient working as configured, not a defect. Kept as designed
+  rather than increasing contrast.
+
+This item is closed out.
 
 ### 2. GTK theme — accent color — not started
 
