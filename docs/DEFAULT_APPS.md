@@ -71,7 +71,23 @@ a functional system without hitting a wall on day one.
   way:
   `flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`
 
-## Not yet implemented — needed before this is actually "done"
+## Status
+
+**VM-confirmed 2026-08-13**: built and installed cleanly, all added
+packages present and working. A real-hardware pass is deliberately
+deferred to a comprehensive test sweep at the end of Phase 3/4 rather
+than run per individual item.
+
+During VM testing, a related gap surfaced: stock GNOME has no persistent
+desktop dock (only the overview dash on Activities). Confirmed working:
+`gnome-shell-extension-dash-to-dock` is prebuilt on **chaotic-aur**
+(`1:106-1` as tested) — installs and works, needs manual enabling via
+the Extensions app afterward. Not added to this package list (the
+stock-GNOME decision above still holds for the base ISO) — earmarked for
+the next phase (GNOME theming/tweaks) or the later Customization App, as
+an opt-in.
+
+## Not yet implemented — smaller items, not blocking
 
 - **`gnome-software`'s Flatpak backend** — needs its exact
   package/plugin requirement on Arch confirmed at build time, not
@@ -85,9 +101,3 @@ a functional system without hitting a wall on day one.
   Settings covers configuration UI, but specific driver packages
   (`gutenprint`, etc.) are hard to right-size without test hardware;
   deferred rather than guessed.
-- **Not yet build/boot tested.** Like every other phase in this project,
-  this list isn't "done" until a real `mkarchiso` build boots clean with
-  it — a large jump in package count (and first-ever pull of packages
-  like `ptyxis`, `starship`, `gnome-online-accounts`, the `gst-plugins-*`
-  set) makes an actual build/boot round especially worth doing before
-  calling this closed, same as every other phase in this project.

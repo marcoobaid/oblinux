@@ -137,22 +137,24 @@ Built so far:
         the job afterward. Fixed: `shellprocess-final.conf` now re-runs the keyring
         init/populate/refresh fresh at the end of every install, best-effort. See
         [`docs/TESTING.md`](docs/TESTING.md), post-round-18/round 19.
-- [~] **Default application package list — drafted 2026-08-13, not yet
-      build/boot tested.** GNOME core apps (calendar, calculator,
-      contacts, clocks, weather, disk-utility, firmware, online-accounts,
-      software, system-monitor, text-editor, baobab, eog, evince,
-      file-roller, sushi, totem), Firefox, Ptyxis (replacing
-      gnome-terminal), a modern shell/CLI toolset (starship,
-      zsh-autosuggestions/syntax-highlighting, ripgrep/fd/bat/eza/fzf/
-      zoxide/btop), full codec set, fonts, printing (cups/avahi),
-      Bluetooth, firewall (ufw/gufw), and Flatpak + Flathub (portals were
-      already shipped for Calamares/GNOME sandboxing; Flathub remote-add
-      wired into `shellprocess-final.conf`). Full rationale and the
-      handful of items still needing verification (image/PDF viewer
-      package currency, printer drivers, `gnome-software`'s Flatpak
-      backend package) in [`docs/DEFAULT_APPS.md`](docs/DEFAULT_APPS.md).
-      Needs a real `mkarchiso` build/boot round before this is closed
-      out — same as every other phase in this project.
+- [x] **Default application package list — drafted and VM-confirmed
+      2026-08-13.** GNOME core apps (calendar, calculator, contacts,
+      clocks, weather, disk-utility, firmware, online-accounts, software,
+      system-monitor, text-editor, baobab, eog, evince, file-roller,
+      sushi, totem), Firefox, Ptyxis (replacing gnome-terminal), a modern
+      shell/CLI toolset (starship, zsh-autosuggestions/syntax-highlighting,
+      ripgrep/fd/bat/eza/fzf/zoxide/btop), full codec set, fonts, printing
+      (cups/avahi), Bluetooth, firewall (ufw/gufw), and Flatpak + Flathub
+      (portals were already shipped for Calamares/GNOME sandboxing;
+      Flathub remote-add wired into `shellprocess-final.conf`). Full
+      rationale and the handful of items still needing verification
+      (image/PDF viewer package currency, printer drivers,
+      `gnome-software`'s Flatpak backend package) in
+      [`docs/DEFAULT_APPS.md`](docs/DEFAULT_APPS.md). Built and installed
+      cleanly on VirtualBox, all added apps present and working — a
+      real-hardware pass is deferred to a comprehensive test sweep at the
+      end of Phase 3/4, not before every individual item (deliberate call,
+      not an oversight).
 
 ## Implementation notes
 
