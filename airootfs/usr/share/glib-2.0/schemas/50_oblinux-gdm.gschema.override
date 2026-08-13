@@ -7,12 +7,23 @@
 # needed; numbered higher than Arch's own override so ours wins.
 #
 # Note: overriding org.gnome.desktop.background changes that schema's
-# system-wide default, not just GDM's — real user accounts created later
-# (e.g. by Calamares) will also default to solid Ink until they set their
-# own wallpaper, same as how distros ship their own default wallpaper.
+# *compiled default*, used by any account that hasn't set its own
+# wallpaper — this is how new user accounts (e.g. created by Calamares)
+# get OBLinux's own default wallpaper instead of upstream GNOME's.
+#
+# GDM itself no longer inherits this default as of the wallpaper set
+# added below: it now has its own dconf profile/database
+# (etc/dconf/profile/gdm + etc/dconf/db/gdm.d/) which takes priority for
+# the gdm user specifically, giving it a distinct Ink->Slate gradient
+# rather than this picture-based default. See that directory and
+# docs/THEMING.md item 1 for why (a real background image on GDM's
+# login screen needs fragile gresource theme-patching, not just a
+# schema override).
 
 [org.gnome.desktop.background]
-picture-options='none'
+picture-uri='/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg'
+picture-uri-dark='/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg'
+picture-options='zoom'
 primary-color='#151a22'
 color-shading-type='solid'
 

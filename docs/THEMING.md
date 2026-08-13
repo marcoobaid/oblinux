@@ -47,15 +47,60 @@ per item as that work starts.
 Order chosen for dependency reasons (noted per item), not just the order
 first listed.
 
-### 1. Default wallpaper(s) — not started
+### 1. Default wallpaper(s) — implemented, not yet build/boot tested
 
-OBLinux logo over a background that's trendy/techy/appealing/inspiring —
-"not too simplistic, not overly complicated." Lives in the main
-`oblinux` repo (`airootfs/usr/share/backgrounds/oblinux/`), matching the
-existing `gnome-backgrounds` package already shipped. Sequenced first:
-low-dependency, quick win, sets the visual mood for everything after it.
-Needs a style-direction discussion (mood, composition candidates) before
-generating anything — not started.
+Three-round design process (all SVG, built on the real
+`docs/branding/oblinux-mark.svg` mark, amber kept confined to the mark's
+own spark per the brand rule):
+
+- Round 1 (Orbit / Circuit Bloom / Aurora Grid) and round 2 (Facet /
+  Soft Waves / Blueprint) explored direction. Facet rejected ("too
+  busy, hurts the eyes"). Soft Waves, Circuit Bloom, and Blueprint
+  approved.
+- Refinement round: the mark's ring got a linear gradient (Primary
+  warming toward the amber spark, `#3f6690` → `#a97f55`, tying the
+  color shift to the "spark escaping the ring" concept rather than
+  being purely decorative) and a small corner wordmark ("OBLINUX",
+  Inter, low-opacity Slate Light, bottom-right).
+
+**Final desktop set** (`airootfs/usr/share/backgrounds/oblinux/`):
+`oblinux-soft-waves.svg` (default), `oblinux-circuit-bloom.svg`,
+`oblinux-blueprint.svg`. Registered with GNOME Settings' background
+picker via `airootfs/usr/share/gnome-background-properties/oblinux.xml`
+— schema verified verbatim against gnome-backgrounds' own upstream
+source and its real install path on Arch, not assumed. Default set via
+the existing GDM/desktop gschema override
+(`usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override`).
+
+**GDM login screen**: does *not* use any of the three wallpapers above.
+Real constraint found and verified against the ArchWiki GDM page: a
+background *image* on GDM's login screen requires patching
+`gnome-shell-theme.gresource` directly, which "will be overwritten on
+subsequent updates of gnome-shell" — i.e. the very next `pacman -Syu`
+on an installed system would silently revert it, unless OBLinux also
+ships a pacman hook to re-patch it after every gnome-shell upgrade
+(real ongoing infrastructure, not a one-time asset). Decided against
+that for now. Instead GDM gets a durable **Ink → Slate vertical
+gradient** via its own dconf profile/database
+(`airootfs/etc/dconf/profile/gdm` + `airootfs/etc/dconf/db/gdm.d/`,
+mechanism verified verbatim against ArchWiki) — this takes priority
+over the gschema default for the `gdm` user specifically, splitting
+GDM's look from the desktop session's without touching the fragile
+gresource path. Two GDM-specific artwork concepts (Beacon, Circuit
+Field) were designed and approved in principle but are **not** shipped
+— set aside once the gresource constraint surfaced; worth revisiting if
+the pacman-hook approach ever becomes worth the maintenance cost.
+
+The mark+wordmark lockup already shown at GDM login (`org.gnome.
+login-screen logo`, `oblinux-logo-text-dark.svg`) is unrelated to this
+item — it predates this round and wasn't touched. Its exact on-screen
+position (bottom-center, like Ubuntu's greeter) is *not* confirmed for
+vanilla GNOME — Ubuntu heavily themes its own greeter, so this needs a
+real look at the built ISO, not an assumption.
+
+Not yet run through a real `mkarchiso` build/boot round — needs that,
+same as every other phase in this project, before this item is fully
+closed out.
 
 ### 2. GTK theme — accent color — not started
 

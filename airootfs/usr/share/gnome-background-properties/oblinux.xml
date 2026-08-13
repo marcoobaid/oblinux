@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<!--
+  OBLinux default wallpaper set, for GNOME Settings' background picker.
+  Schema verified verbatim against gnome-backgrounds' own source
+  (gitlab.gnome.org/GNOME/gnome-backgrounds, backgrounds/*.xml.in) and
+  its real install path on Arch (gnome-backgrounds package file list:
+  usr/share/gnome-background-properties/*.xml), not assumed.
+-->
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>OBLinux Soft Waves</name>
+    <filename>/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg</filename>
+    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#151a22</pcolor>
+    <scolor>#151a22</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>OBLinux Circuit Bloom</name>
+    <filename>/usr/share/backgrounds/oblinux/oblinux-circuit-bloom.svg</filename>
+    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-circuit-bloom.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#151a22</pcolor>
+    <scolor>#151a22</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>OBLinux Blueprint</name>
+    <filename>/usr/share/backgrounds/oblinux/oblinux-blueprint.svg</filename>
+    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-blueprint.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#151a22</pcolor>
+    <scolor>#151a22</scolor>
+  </wallpaper>
+</wallpapers>

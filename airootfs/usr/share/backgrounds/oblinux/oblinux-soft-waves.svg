@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img">
+  <title>OBLinux default wallpaper — Soft Waves (final)</title>
+  <desc>Large soft overlapping wave shapes sweep across the lower portion of the image in layered Slate tones beneath open space holding the OBLinux mark, its ring rendered in a cool-to-warm gradient toward the spark.</desc>
+  <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3f6690"/>
+      <stop offset="100%" stop-color="#a97f55"/>
+    </linearGradient><radialGradient id="sparkglow_1500_260" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#d68a3c" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#d68a3c" stop-opacity="0"/>
+    </radialGradient></defs>
+  <rect x="0" y="0" width="1920" height="1080" fill="#151a22"/>
+  <path d="M-100,760 C384,670 672,850 1056,718 S1632,620 2020,715 L2020,1180 L-100,1180 Z" fill="#2c3a4e" opacity="0.9"/><path d="M-100,840 C384,720 672,960 1056,822 S1632,780 2020,780 L2020,1180 L-100,1180 Z" fill="#3f6690" opacity="0.35"/><path d="M-100,920 C384,850 672,990 1056,872 S1632,760 2020,885 L2020,1180 L-100,1180 Z" fill="#a9b8c8" opacity="0.14"/><path d="M-100,980 C384,830 672,1130 1056,953 S1632,890 2020,905 L2020,1180 L-100,1180 Z" fill="#3f6690" opacity="0.22"/><path d="M-100,1040 C384,980 672,1100 1056,1001 S1632,910 2020,1010 L2020,1180 L-100,1180 Z" fill="#151a22" opacity="0.55"/>
+  
+  <circle cx="1654.0" cy="260.0" r="209.0" fill="url(#sparkglow_1500_260)"/>
+  <g transform="translate(1280.0,40.0) scale(2.200)">
+    <path d="M160.6,135 A70,70 0 1 1 160.6,65" fill="none" stroke="url(#ringGrad)" stroke-width="17" stroke-linecap="round"/>
+    <circle cx="170" cy="100" r="10" fill="#d68a3c"/>
+  </g>
+  <text x="1850" y="1020" text-anchor="end" font-family="Inter, 'Segoe UI', sans-serif" font-size="30" font-weight="500" letter-spacing="4" fill="#a9b8c8" opacity="0.55">OBLINUX</text>
+</svg>

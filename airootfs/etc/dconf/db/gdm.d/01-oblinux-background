@@ -1,0 +1,27 @@
+# GDM-specific background: an Ink -> Slate vertical gradient, distinct
+# from the desktop session's own wallpaper (org.gnome.desktop.background
+# picture-uri, set via the gschema override — see
+# usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override).
+#
+# This uses a GDM-specific dconf profile/database (verified verbatim
+# against the ArchWiki GDM page's "dconf configuration" section) rather
+# than the gschema override, because that override sets the *compiled
+# default* for every user including gdm — this file's values, being in
+# system-db:gdm (see ../profile/gdm), take priority over that default
+# for the gdm user specifically, giving GDM its own look without
+# touching the desktop session's default.
+#
+# Deliberately a gradient, not the Circuit Field artwork explored during
+# design: an actual background *image* on GDM's login screen requires
+# patching gnome-shell-theme.gresource directly (ArchWiki: "This change
+# will be overwritten on subsequent updates of gnome-shell") — fragile,
+# gets silently reverted by the next gnome-shell upgrade on an installed
+# system without an additional pacman hook to keep re-patching it. A
+# solid/gradient color via this schema has none of that fragility, so
+# that's what shipped — see docs/THEMING.md item 1 for the full
+# reasoning and the deferred image-background option.
+[org/gnome/desktop/background]
+primary-color='#151a22'
+secondary-color='#2c3a4e'
+color-shading-type='vertical'
+picture-options='none'
