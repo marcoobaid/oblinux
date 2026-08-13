@@ -1,14 +1,14 @@
 # Default application package list (2026-08-13)
 
-Phase 3/4 item 1 of Marco's bucket list (see `README.md`'s Status section
-for the full list and sequencing). Previously `packages.x86_64` had no
-curated end-user apps at all — just the archiso `releng` boot/rescue
-toolset and a minimal GNOME core (`gdm`, `gnome-shell`,
-`gnome-control-center`, `nautilus`, portals). This fills that in.
+Phase 3/4 item 1 (see `README.md`'s Status section for the full list and
+sequencing). Previously `packages.x86_64` had no curated end-user apps at
+all — just the archiso `releng` boot/rescue toolset and a minimal GNOME
+core (`gdm`, `gnome-shell`, `gnome-control-center`, `nautilus`, portals).
+This fills that in.
 
-Goal, per Marco's direction: GNOME should be **functional and appealing**
-out of the box, with a **solid terminal**, and the user should have "all
-they need to have a functional system" without hitting a wall on day one.
+Goal: GNOME should be **functional and appealing** out of the box, with
+a **solid terminal**, and the user should have everything they need for
+a functional system without hitting a wall on day one.
 
 ## Decisions
 
@@ -17,9 +17,9 @@ they need to have a functional system" without hitting a wall on day one.
   portal prerequisite was free. `flatpak` + `gnome-software` added;
   keeps the curated base list lean while still giving users a GUI app
   store for anything not shipped by default.
-- **Browser: Firefox**, shipped in the base ISO. Marco also wants a
-  **Calamares installer option to choose the default browser at install
-  time** — not yet designed, folded into the "enrich Calamares options"
+- **Browser: Firefox**, shipped in the base ISO. A **Calamares installer
+  option to choose the default browser at install time** is also wanted
+  — not yet designed, folded into the "enrich Calamares options"
   bucket-list item (item 2), tackled after this one.
 - **Office suite: none.** Available via Flatpak/AUR instead of bloating
   every ISO.
