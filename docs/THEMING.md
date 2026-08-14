@@ -184,7 +184,7 @@ declared as a hard dependency in the PKGBUILD. Repo is ~1.6MB, not a
 multi-hundred-MB fork.
 
 **Color match**: forked for the exact Amber hex rather than using
-Papirus's existing "orange" preset as-is (per Marco's call). Derived
+Papirus's existing "orange" preset as-is. Derived
 from Papirus's `orange` folder-color preset (release `20260801`) — all
 81 places-icon files it ships (base folder/folder-open, ~70 named
 kinds — Documents, Downloads, Git, Steam, etc. — plus
@@ -213,9 +213,12 @@ by resolving each symlink to its already-correctly-colored target.
 License: GPL-3.0 (required — this is a derivative of Papirus's GPL-3.0
 work), `AUTHORS` credits Papirus/Paper Icon Set. `PKGBUILD` written
 (new to this project — the first genuinely custom, non-AUR-sourced
-OBLinux package, unlike calamares/paru/ckbcomp), publishes via
-`oblinux_repo` the same way. Not yet committed/pushed, not yet
-build-tested.
+OBLinux package, unlike calamares/paru/ckbcomp), published via
+`oblinux_repo` (`oblinux-icon-theme-1.0.0-1-any.pkg.tar.zst`, signed).
+`oblinux-icon-theme` added to `packages.x86_64` now that it's actually
+resolvable — `papirus-icon-theme` comes along automatically as its
+declared dependency, no separate `packages.x86_64` entry needed for
+that. Not yet build/boot tested.
 
 ### 5. GNOME Shell styling — not started
 

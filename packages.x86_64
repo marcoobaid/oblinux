@@ -169,6 +169,14 @@ calamares
 paru
 ckbcomp
 
+## OBLinux: default icon theme (THEMING.md item 4) — amber-accented
+## places icons (folders, home icon) on top of papirus-icon-theme,
+## from oblinux_repo. See docs/THEMING.md and that repo's own README
+## for the full derivation (github.com/marcoobaid/oblinux-icon-theme).
+## Set as the default via the gschema override
+## (usr/share/glib-2.0/schemas/50_oblinux-gdm.gschema.override).
+oblinux-icon-theme
+
 ## OBLinux: default apps — decided 2026-08-13, see docs/DEFAULT_APPS.md.
 ## Web browser.
 firefox
