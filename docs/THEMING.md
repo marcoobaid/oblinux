@@ -164,16 +164,58 @@ preset silently overrides a plain/weak alias otherwise).
   its GitLab repo is bot-gated for browsing and search needs a login —
   settled empirically instead).
 
-### 4. Icon theme — not started
+### 4. Icon theme — implemented, not yet build/boot tested
 
-New repo: `oblinux-icon-theme`. Derive from an existing open-source icon
-set, recolor accents/folders to Slate & Amber, publish via
-`oblinux_repo`. The heaviest lift in this list — sequenced fourth so the
-accent color and font choices are already in place to design against.
-Open items for when this starts: which base icon set to derive from
-(needs a candidate review — e.g. Papirus, Tela, Fluent, each with
-different license/maintenance-status/aesthetic trade-offs) and a license
-compatibility check for a derivative work.
+**Base**: [Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)
+(GPL-3.0), chosen over Tela/Fluent after checking all three verbatim
+against real sources (license, latest release date, contributor count,
+color-customization mechanism) — Papirus has the broadest app-icon
+coverage and releases every few weeks. `papirus-icon-theme` is in
+Arch's official `extra` repo.
+
+**Architecture**: new repo
+[`oblinux-icon-theme`](https://github.com/marcoobaid/oblinux-icon-theme)
+ships a small *inheriting* theme (`Inherits=Papirus,hicolor` in
+`index.theme`) rather than vendoring Papirus's entire multi-thousand-file
+icon set — only the `places` context (folders + home/user icon) is
+overridden; every other icon (apps, mimetypes, devices, actions,
+status...) falls through to the real `papirus-icon-theme` package,
+declared as a hard dependency in the PKGBUILD. Repo is ~1.6MB, not a
+multi-hundred-MB fork.
+
+**Color match**: forked for the exact Amber hex rather than using
+Papirus's existing "orange" preset as-is (per Marco's call). Derived
+from Papirus's `orange` folder-color preset (release `20260801`) — all
+81 places-icon files it ships (base folder/folder-open, ~70 named
+kinds — Documents, Downloads, Git, Steam, etc. — plus
+user-home/user-desktop), across every size Papirus itself provides
+color variants for (22/24/32/48/64px, matching the sizes its own
+`papirus-folders` companion tool touches — 16px folder icons have no
+color variants upstream). 405 files total. Each source SVG's two
+folder-shape fill colors (`#ee923a` front, `#dd772f` back — confirmed
+via direct inspection that unrelated badge-glyph colors, e.g. the git
+icon's dark brown, are untouched by this and don't collide) were
+replaced with `#d68a3c` (OBLinux's exact Amber) and `#b87027` (derived
+via HLS: same hue/saturation as Amber, ~10 points darker lightness,
+matching Papirus's own front/back ratio) — verified zero leftover
+orange hex and full amber coverage across all 405 output files after
+the fact, not assumed.
+
+One real snag caught and fixed: GitHub serves a symlinked file's raw
+content as the *target path string*, not the resolved file — 20 of the
+405 fetches (4 kinds × 5 sizes: `videos`→`video`, `downloads`→
+`download`, `desktop`→`user-desktop`, `public`→`image-people`, all
+real Papirus symlinks) initially wrote that string as bogus SVG
+content. Caught by verifying amber-hex presence across every output
+file after the run rather than trusting file count alone, then fixed
+by resolving each symlink to its already-correctly-colored target.
+
+License: GPL-3.0 (required — this is a derivative of Papirus's GPL-3.0
+work), `AUTHORS` credits Papirus/Paper Icon Set. `PKGBUILD` written
+(new to this project — the first genuinely custom, non-AUR-sourced
+OBLinux package, unlike calamares/paru/ckbcomp), publishes via
+`oblinux_repo` the same way. Not yet committed/pushed, not yet
+build-tested.
 
 ### 5. GNOME Shell styling — not started
 
