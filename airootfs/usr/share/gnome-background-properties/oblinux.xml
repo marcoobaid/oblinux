@@ -10,8 +10,8 @@
 <wallpapers>
   <wallpaper deleted="false">
     <name>OBLinux Soft Waves</name>
-    <filename>/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg</filename>
-    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg</filename-dark>
+    <filename>/usr/share/backgrounds/oblinux/oblinux-soft-waves.png</filename>
+    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-soft-waves.png</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#151a22</pcolor>
@@ -19,8 +19,8 @@
   </wallpaper>
   <wallpaper deleted="false">
     <name>OBLinux Circuit Bloom</name>
-    <filename>/usr/share/backgrounds/oblinux/oblinux-circuit-bloom.svg</filename>
-    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-circuit-bloom.svg</filename-dark>
+    <filename>/usr/share/backgrounds/oblinux/oblinux-circuit-bloom.png</filename>
+    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-circuit-bloom.png</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#151a22</pcolor>
@@ -28,8 +28,8 @@
   </wallpaper>
   <wallpaper deleted="false">
     <name>OBLinux Blueprint</name>
-    <filename>/usr/share/backgrounds/oblinux/oblinux-blueprint.svg</filename>
-    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-blueprint.svg</filename-dark>
+    <filename>/usr/share/backgrounds/oblinux/oblinux-blueprint.png</filename>
+    <filename-dark>/usr/share/backgrounds/oblinux/oblinux-blueprint.png</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#151a22</pcolor>

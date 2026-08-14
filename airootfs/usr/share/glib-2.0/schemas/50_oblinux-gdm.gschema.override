@@ -21,8 +21,8 @@
 # schema override).
 
 [org.gnome.desktop.background]
-picture-uri='/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg'
-picture-uri-dark='/usr/share/backgrounds/oblinux/oblinux-soft-waves.svg'
+picture-uri='/usr/share/backgrounds/oblinux/oblinux-soft-waves.png'
+picture-uri-dark='/usr/share/backgrounds/oblinux/oblinux-soft-waves.png'
 picture-options='zoom'
 primary-color='#151a22'
 color-shading-type='solid'
@@ -62,12 +62,8 @@ font-name='Inter 11'
 document-font-name='Inter 11'
 monospace-font-name='JetBrainsMono Nerd Font Mono 11'
 # THEMING.md item 4: icon-theme='OBLinux' (oblinux-icon-theme package,
-# github.com/marcoobaid/oblinux-icon-theme). Deliberately NOT yet added
-# to packages.x86_64 — the package doesn't exist in oblinux_repo yet
-# (needs makepkg + update_repo.sh on the build machine first, same
-# build-order dependency as calamares/paru/ckbcomp — see
-# docs/CUSTOM_REPO.md). Safe to set the default here regardless: until
-# the package is actually installed, this just points at a theme that
-# doesn't exist yet and GTK falls back gracefully, same way it would
-# for any unset/missing icon theme.
+# github.com/marcoobaid/oblinux-icon-theme). Published via oblinux_repo
+# and added to packages.x86_64 — see docs/CUSTOM_REPO.md for the
+# build-order dependency this followed (same pattern as calamares/paru/
+# ckbcomp).
 icon-theme='OBLinux'

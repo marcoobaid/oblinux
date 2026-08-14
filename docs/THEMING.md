@@ -129,17 +129,54 @@ policy blocks, crashing the loader with `SIGSYS` and leaving the
 background unloaded (`gnome-shell: Failed to load background ... i/o
 error`), which was destabilizing the session around it.
 
-**Fix**: the wordmark text was converted to real vector path outlines
-extracted directly from Inter Medium (`fontTools`, the actual
-`inter-font` upstream release — same font shipped as the OS default,
-not a substitute), positioned to exactly match the original
-text's metrics (advance widths, `letter-spacing: 4`, `text-anchor:
-end`), then swapped in for the `<text>` element in all three
-wallpaper SVGs. Visually identical output, zero runtime font
-dependency — nothing to resolve, nothing that can crash a sandboxed
-renderer. Verified: no `<text>`/`font-family` remains in any shipped
-wallpaper, all three still valid XML, rendered output confirmed
-pixel-identical to before.
+**First fix (partial)**: the wordmark text was converted to real vector
+path outlines extracted directly from Inter Medium (`fontTools`, the
+actual `inter-font` upstream release), positioned to exactly match the
+original text's metrics. This genuinely fixed *that* crash — rebuilt
+and confirmed via `coredumpctl`/`journalctl`: zero `glycin`/`SIGSYS`/
+`ANOM_ABEND` entries on the next boot, where every prior boot had them.
+But the underlying symptom (GDM never handing off to the successful
+autologin session) persisted regardless.
+
+**Full bisection (round 21, 2026-08-14)**, using `git checkout <sha>` +
+fresh `mkarchiso` builds as controls, each tested by booting the live
+ISO 2–3 times and checking whether it lands on the desktop with zero
+clicks:
+- `4e2b993` (before any of items 1–4) — **clean every time**. Confirms
+  the regression is something in items 1–4, not pre-existing/
+  environmental.
+- `3cc5c11` (items 1+2+3: wallpaper+accent+fonts, before icon theme
+  existed) — **broken 3/3**. Clears item 4 entirely.
+- `894a2d3` (item 1 alone) — **broken**. Clears items 2 and 3.
+- Item 1 with the new GDM dconf profile/database
+  (`etc/dconf/profile/gdm` + `etc/dconf/db/gdm.d/`) removed, wallpaper
+  otherwise untouched — **still broken**. Clears the dconf profile
+  mechanism itself.
+
+That isolates the cause to the wallpaper *image* being the default
+background — specifically, an SVG background. `loginctl session-status`
+confirmed the actual autologin session (`gdm-autologin`, session 1) was
+starting successfully and running the whole time, sitting idle on its
+own VT — GDM was simply never switching the visible console over to
+it, leaving the greeter (and then whatever session a manual login
+creates) visible instead. Rendering the SVG background pulls in the
+same `librsvg`/`cairo`/`pango`/`fontconfig` pipeline implicated in the
+first crash, and this VM has no hardware-accelerated rendering
+(`Failed to initialize accelerated iGPU/dGPU framebuffer sharing: Not
+hardware accelerated` — pure software rendering) — plausible enough
+that rendering it during the critical early-boot window interferes
+with GDM's session-ready/VT-switch handshake, even without the text
+element.
+
+**Real fix**: stopped shipping SVG as the default background format
+entirely. All three wallpapers are now pre-rendered to 1920×1080 PNG
+(via `resvg`, matching the already-approved designs pixel-for-pixel —
+verified by direct visual inspection of the rendered output) and
+*that* is what `picture-uri`/`gnome-background-properties` point at.
+SVG sources moved to `docs/branding/wallpapers/` for future edits —
+not shipped in the image, so nothing renders SVG as part of the live
+boot path at all anymore. Not a workaround for the crash specifically;
+it removes the whole rendering pipeline that crash lived in.
 
 Not yet re-verified on a real build — needs another build/boot round
 before this item is closed out again.
