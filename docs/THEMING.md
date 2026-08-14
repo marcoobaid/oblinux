@@ -119,7 +119,7 @@ Full verification of both mechanisms, not just visual inspection:
 
 This item is closed out.
 
-### 2. GTK theme — accent color — implemented, not yet build/boot tested
+### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 
 `org.gnome.desktop.interface accent-color='orange'`, added to the
 gschema override. Enum verified verbatim against
@@ -131,9 +131,10 @@ confirms the plan's assumption that this would just be a dconf default.
 Not scoped to the desktop session only: since GDM's dconf profile only
 overrides background keys (item 1), this falls through to the same
 compiled default for the GDM greeter too — a deliberate, cohesive
-choice, unlike the wallpaper split.
+choice, unlike the wallpaper split. **Confirmed**: orange shown
+selected under Settings → Appearance on the built VM.
 
-### 3. Fonts — desktop UI + terminal — implemented, not yet build/boot tested
+### 3. Fonts — desktop UI + terminal — done, VM-confirmed 2026-08-13
 
 Desktop UI default: **Inter** (`inter-font` package — confirmed on
 Arch, ships the static `Inter` family plus a separate `Inter Variable`
@@ -147,11 +148,21 @@ to `packages.x86_64`. Wired via `org.gnome.desktop.interface`
 gschema override as item 2) and `/etc/fonts/local.conf` (system-wide
 fontconfig `sans-serif`/`monospace` aliases, `binding="strong"` per
 ArchWiki's own guidance — fontconfig 2.18+'s `48-guessfamily.conf`
-preset silently overrides a plain/weak alias otherwise). The exact
-registered family string for the Nerd Font Mono variant is
-best-confidence from Nerd Fonts' standard naming convention, not
-confirmed from the package file listing alone — needs `fc-list | grep
--i jetbrains` after the next build to confirm or correct.
+preset silently overrides a plain/weak alias otherwise).
+
+**Confirmed on the built VM**, not just visually:
+- `gsettings get org.gnome.desktop.interface font-name` → `'Inter 11'`
+- `fc-match sans-serif` → `Inter.ttc: "Inter" "Regular"` — the
+  system-wide fontconfig default genuinely resolves to Inter, not a
+  fallback.
+- `fc-list | grep -i jetbrains` confirmed the registered family is
+  exactly `JetBrainsMono Nerd Font Mono` — matches what was configured,
+  no correction needed (the one open item from implementation).
+- `eza --icons` in Ptyxis rendered real icon glyphs, not boxes —
+  confirms both the font and Ptyxis's own font handling end to end
+  (couldn't verify Ptyxis's system-font inheritance from source, since
+  its GitLab repo is bot-gated for browsing and search needs a login —
+  settled empirically instead).
 
 ### 4. Icon theme — not started
 
