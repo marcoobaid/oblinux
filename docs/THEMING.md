@@ -47,7 +47,7 @@ per item as that work starts.
 Order chosen for dependency reasons (noted per item), not just the order
 first listed.
 
-### 1. Default wallpaper(s) — done, VM-confirmed 2026-08-13
+### 1. Default wallpaper(s) — regression fixed 2026-08-14, needs re-verification
 
 Three-round design process (all SVG, built on the real
 `docs/branding/oblinux-mark.svg` mark, amber kept confined to the mark's
@@ -117,7 +117,32 @@ Full verification of both mechanisms, not just visual inspection:
   the gradient working as configured, not a defect. Kept as designed
   rather than increasing contrast.
 
-This item is closed out.
+**Regression found and fixed 2026-08-14** (round 21): after items 2–4
+landed, the live session showed GDM falling back to a manual login
+(instead of the established seamless autologin) and instability after
+login. Root-caused via `journalctl`/`coredumpctl`, not guessed: the
+three desktop wallpapers each had a `<text font-family="Inter, ...">`
+element (the small corner wordmark). Rendering that inside GNOME's
+*sandboxed* SVG loader (`glycin-svg`) triggers a fontconfig cache
+build, which calls `symlink()` — a syscall the sandbox's seccomp
+policy blocks, crashing the loader with `SIGSYS` and leaving the
+background unloaded (`gnome-shell: Failed to load background ... i/o
+error`), which was destabilizing the session around it.
+
+**Fix**: the wordmark text was converted to real vector path outlines
+extracted directly from Inter Medium (`fontTools`, the actual
+`inter-font` upstream release — same font shipped as the OS default,
+not a substitute), positioned to exactly match the original
+text's metrics (advance widths, `letter-spacing: 4`, `text-anchor:
+end`), then swapped in for the `<text>` element in all three
+wallpaper SVGs. Visually identical output, zero runtime font
+dependency — nothing to resolve, nothing that can crash a sandboxed
+renderer. Verified: no `<text>`/`font-family` remains in any shipped
+wallpaper, all three still valid XML, rendered output confirmed
+pixel-identical to before.
+
+Not yet re-verified on a real build — needs another build/boot round
+before this item is closed out again.
 
 ### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 
