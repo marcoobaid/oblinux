@@ -47,7 +47,7 @@ per item as that work starts.
 Order chosen for dependency reasons (noted per item), not just the order
 first listed.
 
-### 1. Default wallpaper(s) — regression fixed 2026-08-14, needs re-verification
+### 1. Default wallpaper(s) — done; separate live-boot regression (see below) traced to item 3, candidate fix pending verification
 
 Three-round design process (all SVG, built on the real
 `docs/branding/oblinux-mark.svg` mark, amber kept confined to the mark's
@@ -178,8 +178,80 @@ not shipped in the image, so nothing renders SVG as part of the live
 boot path at all anymore. Not a workaround for the crash specifically;
 it removes the whole rendering pipeline that crash lived in.
 
-Not yet re-verified on a real build — needs another build/boot round
-before this item is closed out again.
+**Round 21's fix was real but did not resolve the regression.** The PNG
+conversion above is a genuine improvement (removes SVG rendering from the
+live boot path entirely) and stays regardless of the rest of this story,
+but rebuilding and re-testing showed the live-session hang still occurred.
+This was the first hard lesson of this investigation: fixing a real,
+confirmed bug found while chasing a symptom does not guarantee it's *the*
+bug causing that symptom — the fix needed independent re-verification
+against the original reported issue, not just against its own crash
+signature.
+
+**Continued bisection (round 22+, 2026-08-15/16)**, this time by rebuilding
+`packages.x86_64` from scratch starting at the last-known-good commit and
+re-adding packages a few at a time, each tested with a much larger reboot
+sample (8–10+, not 2–3) after an earlier small-sample result was itself
+contradicted on retest — the second hard lesson: intermittent/probabilistic
+failures need real sample sizes, not 2–3 boots, to trust a "clean" result.
+This isolated the regression to one specific package: **`ttf-jetbrains-
+mono-nerd`**. Confirmed with a clean single-variable `diff`/Meld comparison
+of two otherwise-identical `packages.x86_64` trees — commenting out just
+that one line reliably fixes the hang, every time; leaving it in reliably
+reproduces it, every time.
+
+Process-level investigation of a hung boot (via SSH, to avoid contaminating
+the very VT-switch state being diagnosed):
+- `top` showed **0.3–3.2% CPU for 30 minutes straight** — ruled out "slow
+  fontconfig cache build" (the package is legitimately huge for what it
+  is: 90 `.ttf` files, 228 MB installed, confirmed via archlinux.org, vs.
+  a typical font's few hundred KB — but nothing was ever busy processing
+  them).
+- `coredumpctl list` — empty. Ruled out a repeat of round 21's sandboxed-
+  renderer crash mechanism; nothing is dying.
+- `ps -eo pid,ppid,stat,wchan,cmd` — every relevant process (`gdm`,
+  `gdm-session-worker`, both `gnome-shell --mode=gdm` *and*
+  `--mode=user`, and all `gsd-*` daemons for both sessions) sitting in
+  normal idle wait states (`Ss`/`Ssl`, `poll_schedule_timeout`). Both the
+  greeter and the real liveuser desktop are fully started and healthy —
+  the failure is not inside either session, it's in the hand-off between
+  them.
+- `journalctl -b -u gdm` — GDM's own daemon logs nothing at all about
+  switching sessions, before or after the hang; total silence for the
+  ~3 minutes between last activity and the point of giving up. Consistent
+  with the hand-off never being attempted, not attempted-and-failing.
+- Two red herrings, each ruled out by comparing directly against a
+  **working** boot's same output (the actual key move that broke the
+  stall in reasoning — comparing against a working-boot baseline instead
+  of analyzing the broken boot in isolation):
+  - `gnome-shell-calendar-server` fails to start (`error while loading
+    shared libraries: libecal-2.0.so.3: cannot open shared object file`)
+    — a real, separate `evolution-data-server` packaging gap, but
+    present identically on the working boot too. Not the cause.
+  - `loginctl show-session 1 --all` reports `Active=no` on the stuck
+    session — looked damning, but also present identically on the
+    working boot. Turned out not to mean what it looked like it meant
+    for a Wayland seat session; `loginctl seat-status seat0`'s `Sessions:
+    *N` marker is the metric that actually reflects seat-level display
+    state (confirmed `*1` — session 1 correctly marked active — on a
+    working boot). Not yet captured cleanly on a broken boot (requires
+    checking before ever touching a TTY, which needs SSH with a
+    pre-existing root password — the live ISO's root account has none by
+    default, so this remains an open follow-up if the fix below doesn't
+    hold).
+
+**Candidate fix (2026-08-16), not yet build/boot verified**: rather than
+continue chasing the exact mechanism, stopped installing the full
+`ttf-jetbrains-mono-nerd` package (90 files / 228 MB) and instead vendored
+just the 4 files OBLinux actually uses — see
+`airootfs/usr/share/fonts/OBLinux-jetbrains-mono-nerd/README.md` for the
+full rationale and provenance. This is a sensible change on its own merits
+regardless of outcome (228 MB → 9.7 MB for the one style actually
+referenced by `monospace-font-name`), and removes the exact package the
+bisection isolated as one variable either way. Whether file-count/size was
+the actual mechanism, or merely correlated with something else the package
+also happens to trigger, is not proven — needs a real build and boot to
+confirm.
 
 ### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 
@@ -225,6 +297,15 @@ preset silently overrides a plain/weak alias otherwise).
   (couldn't verify Ptyxis's system-font inheritance from source, since
   its GitLab repo is bot-gated for browsing and search needs a login —
   settled empirically instead).
+
+**Update 2026-08-16**: the `ttf-jetbrains-mono-nerd` package described
+above is no longer installed via pacman — it was isolated via git bisection
+as the trigger of the live-boot regression documented under item 1, and
+replaced with 4 vendored files providing the same `JetBrainsMono Nerd Font
+Mono` family. See item 1's investigation log and
+`airootfs/usr/share/fonts/OBLinux-jetbrains-mono-nerd/README.md`. Family
+name and fontconfig wiring are unchanged — only how the files get onto the
+image changed.
 
 ### 4. Icon theme — implemented, not yet build/boot tested
 

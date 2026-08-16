@@ -248,7 +248,15 @@ ttf-liberation
 ## org.gnome.desktop.interface (see the gschema override) and
 ## /etc/fonts/local.conf.
 inter-font
-ttf-jetbrains-mono-nerd
+
+## NOTE: JetBrains Mono Nerd Font is NOT installed via the
+## ttf-jetbrains-mono-nerd package (90 files / 228MB for one style used).
+## It's vendored directly — see
+## airootfs/usr/share/fonts/OBLinux-jetbrains-mono-nerd/ — both to avoid
+## that bloat and because this package was the exact, git-bisected trigger
+## of a severe live-session boot regression (docs/THEMING.md investigation
+## log). Root mechanism unconfirmed; shipping only the 4 files actually
+## used removes it as a variable regardless.
 
 ## Printing — GNOME Settings' printer panel needs cups running;
 ## avahi/nss-mdns enable driverless network-printer discovery.
