@@ -313,9 +313,9 @@ original margins (3.6% right, 5.5% bottom) were narrower than that. Fixed
 by repositioning the wordmark (same scale/kerning, shifted as a rigid
 block) to a 13%/14% margin in all three `docs/branding/wallpapers/*.svg`
 sources, then re-rendering to the shipped PNGs via `resvg` (same pipeline
-as the original SVG→PNG fix). Not yet build/boot verified on real
-hardware — needs a rebuild and a look at the actual laptop screen to
-confirm.
+as the original SVG→PNG fix). **Confirmed 2026-08-17**: rebuilt, wordmark
+displays fully and correctly on both VirtualBox and the physical laptop
+that originally showed the crop. Closed.
 
 ### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 
