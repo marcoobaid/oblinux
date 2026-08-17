@@ -286,9 +286,10 @@ patching GDM or Plymouth:
    `/dev/null`) on both the live ISO and the installed system — nothing
    else competes for tty1 while GDM/Plymouth own it. This replaces the
    previous `getty@tty1.service.d/autologin.conf` passwordless-root-on-tty1
-   convenience (see `docs/CALAMARES.md`); tty2–tty6 are unaffected and
-   still give the same access with one Enter keypress at the (blank) root
-   password prompt.
+   convenience (see `docs/CALAMARES.md`); tty2–tty6 remain available as
+   normal consoles. The live environment accepts its blank root password,
+   while an installed system requires the root password configured by
+   Calamares.
 3. No changes needed to `packages.x86_64`, mkinitcpio hooks, or kernel
    params — Plymouth, its custom OBLinux theme, and every other branding
    decision in this document stay exactly as designed.
