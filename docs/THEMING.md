@@ -47,7 +47,7 @@ per item as that work starts.
 Order chosen for dependency reasons (noted per item), not just the order
 first listed.
 
-### 1. Default wallpaper(s) — done; separate live-boot regression (see below) traced to item 3, candidate fix pending verification
+### 1. Default wallpaper(s) — done; separate live-boot regression (see below) — root cause found and fixed, validated 11/11
 
 Three-round design process (all SVG, built on the real
 `docs/branding/oblinux-mark.svg` mark, amber kept confined to the mark's
@@ -240,18 +240,62 @@ the very VT-switch state being diagnosed):
     default, so this remains an open follow-up if the fix below doesn't
     hold).
 
-**Candidate fix (2026-08-16), not yet build/boot verified**: rather than
-continue chasing the exact mechanism, stopped installing the full
+**Font vendoring (2026-08-16)**: stopped installing the full
 `ttf-jetbrains-mono-nerd` package (90 files / 228 MB) and instead vendored
 just the 4 files OBLinux actually uses — see
 `airootfs/usr/share/fonts/OBLinux-jetbrains-mono-nerd/README.md` for the
-full rationale and provenance. This is a sensible change on its own merits
-regardless of outcome (228 MB → 9.7 MB for the one style actually
-referenced by `monospace-font-name`), and removes the exact package the
-bisection isolated as one variable either way. Whether file-count/size was
-the actual mechanism, or merely correlated with something else the package
-also happens to trigger, is not proven — needs a real build and boot to
-confirm.
+full rationale and provenance. This was tried as a candidate fix for the
+regression and **did not resolve it** (10/10 boots still failed once
+properly sampled) — the font package was never the actual mechanism, only
+one of several things that happened to shift the odds of hitting the real
+race below. Kept anyway: 228 MB → 9.7 MB for the one style actually
+referenced by `monospace-font-name` is a sensible change on its own merits,
+independent of this investigation.
+
+**Root cause, confirmed (2026-08-17)**: an upstream GDM + Plymouth +
+autologin VT race, unrelated to any application/package/branding choice
+made in this project. A close match was found in a public GDM/NixOS bug
+report describing the same trigger combination (autologin + Plymouth +
+systemd-based initramfs) at "at least 50%" failure — OBLinux's own
+measured rate at this point was ~50% too, though OBLinux's initramfs
+turned out to be the traditional `udev`-based kind, not the systemd-based
+kind that report described as required, so it's a related but not
+identical manifestation of the same underlying class of bug.
+
+GDM debug logging nailed the exact mechanism: the autologin session starts
+correctly and completely on `tty2`. Around 20 seconds later, Plymouth
+finishes its own independent, delayed shutdown and switches the active VT
+*back* to `tty1` — where GDM then (re)creates and displays its greeter,
+making the perfectly healthy, already-running desktop session on `tty2`
+invisible. This matches every piece of prior process-level evidence
+exactly: no crash, no busy process, both sessions fully healthy — because
+nothing was ever broken, the visible VT was just switched away from the
+working session by Plymouth itself, well after the fact.
+
+**Fix**, three parts, all live in the actual boot path rather than
+patching GDM or Plymouth:
+1. `airootfs/etc/systemd/system/gdm.service.d/10-plymouth.conf` —
+   `ExecStartPre=-/usr/bin/plymouth quit --retain-splash`. Makes GDM tell
+   Plymouth to quit *synchronously, before GDM's own startup proceeds*,
+   instead of leaving Plymouth to shut itself down independently, later,
+   racing against a session that's by then already on screen.
+   `--retain-splash` keeps the last rendered frame up (no flash-to-black)
+   until GDM's own compositor draws over it — the branded boot splash is
+   visually unaffected.
+2. `getty@tty1.service` and `autovt@tty1.service` masked (symlinked to
+   `/dev/null`) on both the live ISO and the installed system — nothing
+   else competes for tty1 while GDM/Plymouth own it. This replaces the
+   previous `getty@tty1.service.d/autologin.conf` passwordless-root-on-tty1
+   convenience (see `docs/CALAMARES.md`); tty2–tty6 are unaffected and
+   still give the same access with one Enter keypress at the (blank) root
+   password prompt.
+3. No changes needed to `packages.x86_64`, mkinitcpio hooks, or kernel
+   params — Plymouth, its custom OBLinux theme, and every other branding
+   decision in this document stay exactly as designed.
+
+**Validated 11/11 consecutive VirtualBox boots.** Confirms definitively:
+none of items 1–4 (wallpaper, accent color, fonts, icon theme), the
+package-list addition, or `liveuser`/branding work was ever the cause.
 
 ### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 

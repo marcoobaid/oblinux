@@ -107,7 +107,7 @@ list) — full reasoning is in `modules/services-systemd.conf` and
 | GDM autologin as liveuser | `/etc/gdm/custom.conf` | disabled, not deleted (keeps the file's section scaffolding) |
 | `liveuser` account | — | dedicated `removeuser` module |
 | Root tty1 rescue-script mechanism | `/root/.automated_script.sh`, `/root/.zlogin` | removed |
-| Passwordless root autologin on tty1 | `getty@tty1.service.d/` | removed |
+| tty1 getty (was passwordless root autologin) | `getty@tty1.service`, `autovt@tty1.service` | masked on live ISO *and* installed system (kept — see item 1 in `docs/THEMING.md`, part of the GDM+Plymouth VT race fix; tty2–tty6 remain normal consoles) |
 | Ephemeral pacman keyring mount | `etc-pacman.d-gnupg.mount` | removed (would break signature verification after every reboot otherwise) |
 | Live-only first-boot services | `pacman-init.service`, `choose-mirror.service` | masked (`choose-mirror` is interactive — left enabled it could hang an unattended boot) |
 | Mirror ranking | `reflector.service` | disabled, not masked (stays available to run manually/periodically) |
