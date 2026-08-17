@@ -302,6 +302,21 @@ package-list addition, or `liveuser`/branding work was ever the cause.
 pushed `main` (not the pre-push local test build) passed **10/10 boots**
 and a full Calamares install completed successfully. Closed.
 
+**Wordmark crop fix (2026-08-17)**: on a real physical laptop install, the
+"OBLINUX" corner wordmark was cropped (missing its final letter) — a
+separate, unrelated cosmetic bug from the VT race above. Root cause:
+`picture-options='zoom'` crops the wallpaper to fill the screen, cropping
+proportionally to how far the screen's aspect ratio departs from the
+1920×1080 (16:9) source the wallpapers were rendered at — a 16:10 laptop
+panel alone crops ~5.6% off each side, more for 3:2. The wordmark's
+original margins (3.6% right, 5.5% bottom) were narrower than that. Fixed
+by repositioning the wordmark (same scale/kerning, shifted as a rigid
+block) to a 13%/14% margin in all three `docs/branding/wallpapers/*.svg`
+sources, then re-rendering to the shipped PNGs via `resvg` (same pipeline
+as the original SVG→PNG fix). Not yet build/boot verified on real
+hardware — needs a rebuild and a look at the actual laptop screen to
+confirm.
+
 ### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 
 `org.gnome.desktop.interface accent-color='orange'`, added to the
