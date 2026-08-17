@@ -118,7 +118,7 @@ profiledef.sh      Archiso profile definition
 ## Origins
 
 This repository replaces
-[`OBLinux-OLD`](https://github.com/marcoobaid/OBLinux-OLD). The current
+[`oblinux-old`](https://github.com/marcoobaid/oblinux-old). The current
 project was rebuilt from a modern Archiso `releng` baseline instead of
 continuing to patch a profile that had been dormant for several years.
 
