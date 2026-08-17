@@ -298,6 +298,10 @@ patching GDM or Plymouth:
 none of items 1–4 (wallpaper, accent color, fonts, icon theme), the
 package-list addition, or `liveuser`/branding work was ever the cause.
 
+**Independently reconfirmed 2026-08-17**: a fresh ISO built from the
+pushed `main` (not the pre-push local test build) passed **10/10 boots**
+and a full Calamares install completed successfully. Closed.
+
 ### 2. GTK theme — accent color — done, VM-confirmed 2026-08-13
 
 `org.gnome.desktop.interface accent-color='orange'`, added to the
