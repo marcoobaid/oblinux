@@ -1,0 +1,50 @@
+// Generated equivalent of upstream Graphite's install.sh templating step
+// (which copies _tweaks.scss to _tweaks-temp.scss and sed-substitutes
+// CLI-flag values into it). Hand-written here since OBLinux only ever
+// builds one fixed configuration — see docs/BRANDING.md and
+// docs/THEMING.md item 5 for the values chosen.
+
+// transparent opacity
+$opacity: 'default';
+
+// Theme primary color — 'default' + $color_type: 'oblinux' below is what
+// routes _colors.scss to the Amber $theme_default_color override.
+$theme: 'default';
+
+// Theme size
+$compact: 'false';
+
+// Theme translucent
+$translucent: 'false';
+
+// Panel translucent opacity
+$panel_opacity: 1.0;
+
+// Darker color — irrelevant once $color_type: 'oblinux' supplies its own
+// fixed e-h ramp (see _colors.scss's background() function), kept at the
+// upstream default for anything that still branches on it.
+$darker: 'false';
+
+// Theme color type : default/nord/blackness/oblinux
+$color_type: 'oblinux';
+
+// Windows outline style
+$rimless: 'false';
+
+// Windows outline style
+$sidebar: 'styled'; // styled/normal
+
+// Gnome-Shell version — matches the widgets-48-0/extensions-46-0 chain
+// used in _common-temp.scss (the most recent version-specific styling
+// Graphite ships; OBLinux runs gnome-shell 50.4, see docs/THEMING.md
+// item 5's scoping notes on the resulting compatibility gap).
+$shell_version: '48';
+
+// Gnome-Shell float panel version
+$float: 'false';
+
+// Gnome-Shell colorful panel version
+$colorful: 'false';
+
+// Default corner radius value
+$default_corner: 6px;

@@ -427,7 +427,7 @@ resolvable — `papirus-icon-theme` comes along automatically as its
 declared dependency, no separate `packages.x86_64` entry needed for
 that. Not yet build/boot tested.
 
-### 5. GNOME Shell styling — plumbing done, design not started
+### 5. GNOME Shell styling — implemented, not yet build/boot tested
 
 Goal: make the top bar, overview, and quick-settings panel visually
 appealing and on-brand. Real technical constraint resolved before design,
@@ -466,7 +466,7 @@ specifically because this is an official GNOME package, not a
 third-party extension, and only the User Themes component of the bundle
 gets enabled.
 
-**Plumbing implemented, not yet build/boot tested**:
+**Plumbing implemented**:
 - `gnome-shell-extensions` added to `packages.x86_64`.
 - `org.gnome.shell enabled-extensions` set to the User Themes UUID
   (`user-theme@gnome-shell-extensions.gcampax.github.com`, confirmed
@@ -475,15 +475,48 @@ gets enabled.
   `/usr/share/themes/OBLinux/gnome-shell/gnome-shell.css`, system-wide
   (applies to `liveuser` and any Calamares-created account, same pattern
   as the icon theme).
-- `airootfs/usr/share/themes/OBLinux/gnome-shell/gnome-shell.css` created
-  as an intentionally empty placeholder — lets the mechanism itself (is
-  the extension enabled, is the file found and loaded) be build/boot
-  verified independently of the actual design, which hasn't started.
 
-**Next**: verify the plumbing on a real build/boot (should be visually
-unchanged from stock GNOME, since the stylesheet is empty — the thing to
-check is that nothing errors and the extension shows as active), then a
-separate design conversation for the actual CSS content.
+**Design (2026-08-19)**: base chosen after comparing real GitHub activity
+across candidates — not just overall repo activity, but commits actually
+touching each theme's `gnome-shell` module specifically (a distinction
+that mattered: Nordic's overall repo looked active, but its shell styling
+was stalled at Shell v40–42):
+
+| Theme | Stars | License | Last **shell-specific** work | Verdict |
+|---|---|---|---|---|
+| Nordic | 2,721 | GPL-3.0 | Stalled at Shell v40–42 | Ruled out — real compat risk |
+| Orchis | 4,058 | GPL-3.0 | Shell 48 config (Mar 2025), fix (Sep 2025) | Material Design — bigger stylistic gap from Slate & Amber |
+| **Graphite** | 1,509 | GPL-3.0 | "Fixed gnome-shell 48 issues" (Apr 2025), quick-settings/message-list updates (Jul 2025) | **Chosen** — neutral graphite grey needs least transformation to reach Slate |
+| WhiteSur | 9,186 | MIT | (macOS-mimicking aesthetic — wrong direction, OBLinux wants its own identity) | Ruled out on aesthetic grounds |
+
+Forked [vinceliuice/Graphite-gtk-theme](https://github.com/vinceliuice/Graphite-gtk-theme)'s
+`gnome-shell` module only (not `gtk-3.0`/`gtk-4.0` — item 2's "native
+accent-color, no custom GTK theme" decision stays intact). Full source,
+recolor mapping table, and rebuild instructions in
+`docs/branding/gnome-shell-theme-src/README.md`. Summary:
+- New `$color_type: 'oblinux'` branch in `_colors.scss`, following the
+  exact same pattern as upstream's own `'nord'` branch — a 4-step dark
+  background ramp reusing the two already-shipped brand hexes (Ink
+  `#151a22` for the top bar/OSD, Slate `#2c3a4e` for the main
+  background/base/login, two interpolated steps for scrim/surface),
+  Amber `#d68a3c` for the accent (buttons, focus rings, selection,
+  toggles — verified present in the compiled CSS across all of those),
+  Slate `#3f6690` for links.
+- The two accent-dependent asset SVGs (toggle/checkbox) recolored from
+  Graphite's stock Material orange to exact Amber.
+- Upstream's bundled `#lockDialogGroup` background image removed — would
+  conflict with the GDM dconf gradient item 1 already ships.
+- GPL-3.0 (same as the icon theme's Papirus fork) — `LICENSE`/`AUTHORS`
+  added under `airootfs/usr/share/themes/OBLinux/`.
+
+**Known gap, disclosed not hidden**: Graphite's own shell-specific work
+tops out around Shell 48; OBLinux ships 50.4. Built against the most
+current chain Graphite has (`widgets-48-0`/`extensions-46-0`) — real
+visual verification against 50.4 hasn't happened yet.
+
+**Next**: build/boot verification — confirm the extension is active, the
+theme applies, and nothing renders visibly broken on the actual shipped
+`gnome-shell` version.
 
 ### 6. Neofetch/Fastfetch branding — not started
 

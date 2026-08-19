@@ -1,0 +1,13 @@
+// OBLinux GNOME Shell theme entry point (docs/THEMING.md item 5).
+// Forked from vinceliuice/Graphite-gtk-theme's gnome-shell-Dark.scss —
+// same structure, OBLinux ships dark-only so there's no Light variant.
+// Recoloring happens in ../../sass/_colors.scss via $color_type: 'oblinux'
+// (set in ../../sass/_tweaks-temp.scss), not here.
+
+$variant: 'dark';
+$topbar: 'dark';
+
+@import '../../sass/colors';
+@import '../../sass/gnome-shell/variables';
+@import '../../sass/gnome-shell/drawing';
+@import '../../sass/gnome-shell/common-temp';
