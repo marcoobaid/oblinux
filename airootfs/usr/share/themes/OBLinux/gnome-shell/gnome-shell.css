@@ -1,0 +1,12 @@
+/* OBLinux GNOME Shell theme (THEMING.md item 5).
+ *
+ * Placeholder — intentionally empty. This lets the plumbing (the
+ * gnome-shell-extensions package, the User Themes extension being
+ * enabled by default, and this file being found and loaded) be built
+ * and boot-tested independently of the actual design, which hasn't
+ * started yet. An empty stylesheet is valid: GNOME Shell falls back to
+ * its own built-in styling for anything not overridden here, so this
+ * should be visually unchanged from stock GNOME once verified working.
+ *
+ * Real content goes here once the item 5 design conversation happens.
+ */

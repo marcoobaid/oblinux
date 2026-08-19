@@ -145,6 +145,17 @@ upower
 xdg-desktop-portal
 xdg-desktop-portal-gnome
 
+## OBLinux: shell theming (THEMING.md item 5) — deliberate, one-time
+## exception to the package-list phase's "stock GNOME, no extensions"
+## decision. Only the "User Themes" extension from this bundle is
+## enabled (see the gschema override); it's an official GNOME-maintained
+## extension (part of this upstream package, not third-party), version
+## 50.3 verified compatible with the shipped gnome-shell (50.4). Loads a
+## CSS file from a stable runtime location — unlike the GDM background's
+## gresource-patch approach (item 1), it isn't reverted by every
+## gnome-shell update.
+gnome-shell-extensions
+
 ## OBLinux: networking (replaces releng's iwd/systemd-networkd default;
 ## NetworkManager is what GNOME Settings' network panel expects)
 networkmanager

@@ -427,18 +427,63 @@ resolvable — `papirus-icon-theme` comes along automatically as its
 declared dependency, no separate `packages.x86_64` entry needed for
 that. Not yet build/boot tested.
 
-### 5. GNOME Shell styling — not started
+### 5. GNOME Shell styling — plumbing done, design not started
 
 Goal: make the top bar, overview, and quick-settings panel visually
-appealing and on-brand. Real technical constraint to resolve before
-design, not after: modern GNOME Shell doesn't natively support custom
-shell themes without the "User Themes" extension (or a deeper
-gresource-level override) — and the base ISO deliberately ships no
-extensions (stock-GNOME decision from the package-list phase). Needs a
-scoping conversation on approach (extension vs. baked-in override vs.
-leaning on accent color alone) before any design work. Sequenced after
+appealing and on-brand. Real technical constraint resolved before design,
+not after: modern GNOME Shell doesn't natively support custom shell
+themes without the "User Themes" extension (or a deeper gresource-level
+override) — and the base ISO deliberately ships no extensions
+(stock-GNOME decision from the package-list phase). Sequenced after
 wallpaper/GTK/fonts/icon theme so it can be designed against the actual
 established look rather than in isolation.
+
+**Scoping decision (2026-08-17)**: three real approaches, verified against
+primary sources rather than assumed —
+1. **User Themes extension** — verified compatible (v50.3) with the
+   shipped `gnome-shell` (50.4). Ships in `gnome-shell-extensions`, an
+   official GNOME-maintained package (not third-party) — its own author
+   is a GNOME core developer. Loads CSS from a stable runtime location
+   (verified against the extension's own `util.js`: checks `~/.themes`,
+   then `$XDG_DATA_HOME/themes`, then every system data dir's `themes/`
+   subdirectory — `/usr/share/themes` included), so unlike the GDM
+   background's gresource-patch (item 1), it survives `gnome-shell`
+   updates without needing an ongoing pacman hook.
+2. **Direct `gnome-shell-theme.gresource` patch** — same fragile pattern
+   already rejected for the GDM background in item 1, same reason
+   (silently reverted by every `gnome-shell` update). Ruled out again
+   here, same precedent.
+3. **Accent color alone, no new dependency** — verified against GNOME's
+   own 47 release notes: accent color reaches "throughout the system and
+   apps," but that's GTK/libadwaita widgets and a few native Shell
+   touches (quick-settings toggle color); the top bar background and
+   overview chrome stay the same dark neutral regardless. Already shipped
+   (item 2) — doesn't give item 5 much new on its own.
+
+**Decision: option 1**, as a deliberate, one-time exception to the
+package-list phase's "stock GNOME, no extensions" rule — judged safe
+specifically because this is an official GNOME package, not a
+third-party extension, and only the User Themes component of the bundle
+gets enabled.
+
+**Plumbing implemented, not yet build/boot tested**:
+- `gnome-shell-extensions` added to `packages.x86_64`.
+- `org.gnome.shell enabled-extensions` set to the User Themes UUID
+  (`user-theme@gnome-shell-extensions.gcampax.github.com`, confirmed
+  against the package's real file list) in the gschema override.
+- `org.gnome.shell.extensions.user-theme name='OBLinux'` — looks for
+  `/usr/share/themes/OBLinux/gnome-shell/gnome-shell.css`, system-wide
+  (applies to `liveuser` and any Calamares-created account, same pattern
+  as the icon theme).
+- `airootfs/usr/share/themes/OBLinux/gnome-shell/gnome-shell.css` created
+  as an intentionally empty placeholder — lets the mechanism itself (is
+  the extension enabled, is the file found and loaded) be build/boot
+  verified independently of the actual design, which hasn't started.
+
+**Next**: verify the plumbing on a real build/boot (should be visually
+unchanged from stock GNOME, since the stylesheet is empty — the thing to
+check is that nothing errors and the extension shows as active), then a
+separate design conversation for the actual CSS content.
 
 ### 6. Neofetch/Fastfetch branding — not started
 

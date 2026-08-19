@@ -46,16 +46,16 @@ logo='/usr/share/pixmaps/oblinux-logo-text-dark.svg'
 # file list (usr/share/fonts/inter/Inter.ttc — the static family used
 # here rather than the variable "Inter Variable" instance).
 #
-# monospace-font-name: JetBrains Mono, Nerd Font-patched
-# (ttf-jetbrains-mono-nerd, added to packages.x86_64) — needed for
+# monospace-font-name: JetBrains Mono, Nerd Font-patched — needed for
 # starship/eza's icon glyphs to render instead of missing-glyph boxes.
-# Uses the "Mono" build variant specifically (not the plain or "Propo"
-# variant) so icon glyphs occupy a single fixed-width cell and don't
-# break terminal column alignment. Exact registered family string is
-# best-confidence from Nerd Fonts' standard naming convention, not
-# confirmed from the package file list alone (font names live in the
-# file's internal metadata) — verify with `fc-list | grep -i
-# jetbrains` after the next build and correct this value if it differs.
+# Vendored directly (airootfs/usr/share/fonts/OBLinux-jetbrains-mono-nerd/,
+# not the ttf-jetbrains-mono-nerd package — see that directory's README
+# and docs/THEMING.md item 1 for why). Uses the "Mono" build variant
+# specifically (not the plain or "Propo" variant) so icon glyphs occupy a
+# single fixed-width cell and don't break terminal column alignment.
+# Registered family confirmed via fontTools name-table inspection of the
+# vendored files: "JetBrainsMono Nerd Font Mono" (typographic family,
+# name ID 16) — matches this value.
 [org.gnome.desktop.interface]
 accent-color='orange'
 font-name='Inter 11'
@@ -67,3 +67,22 @@ monospace-font-name='JetBrainsMono Nerd Font Mono 11'
 # build-order dependency this followed (same pattern as calamares/paru/
 # ckbcomp).
 icon-theme='OBLinux'
+
+# THEMING.md item 5: GNOME Shell styling, via the "User Themes" extension
+# (gnome-shell-extensions package, added to packages.x86_64 — a
+# deliberate, one-time exception to the package-list phase's
+# "stock GNOME, no extensions" decision; see that file's comment for why
+# this specific extension was judged safe). UUID verified against the
+# package's real file list, not assumed.
+[org.gnome.shell]
+enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com']
+
+# name='OBLinux' looks for /usr/share/themes/OBLinux/gnome-shell/
+# gnome-shell.css — verified against the extension's own upstream
+# source (getThemeDirs() in util.js checks ~/.themes, then
+# $XDG_DATA_HOME/themes, then every system data dir's themes/
+# subdirectory, which includes /usr/share/themes). System-wide, so this
+# applies to liveuser and any account Calamares creates, no per-user
+# setup needed — same pattern as the OBLinux icon theme.
+[org.gnome.shell.extensions.user-theme]
+name='OBLinux'
