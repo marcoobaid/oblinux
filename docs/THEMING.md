@@ -539,6 +539,11 @@ follow-up **clean reboot with zero manual commands first** showed
 reading was a one-off artifact of the disable/enable/reload probing
 during diagnosis, not a real first-boot activation bug.
 
+**Reconfirmed 2026-08-20** on a separate, independent build/install
+alongside items 6 and 7 — Ink top bar, Slate Quick Settings panel,
+Amber toggles all correct. All three theming items verified together
+on the same fresh install.
+
 ### 6. Neofetch/Fastfetch branding — done, VM-confirmed 2026-08-20
 
 Both open questions from the original scoping resolved with real evidence
