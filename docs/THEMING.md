@@ -539,17 +539,61 @@ follow-up **clean reboot with zero manual commands first** showed
 reading was a one-off artifact of the disable/enable/reload probing
 during diagnosis, not a real first-boot activation bug.
 
-### 6. Neofetch/Fastfetch branding — not started
+### 6. Neofetch/Fastfetch branding — implemented, not yet build/boot tested
 
-Fastfetch over neofetch — neofetch's upstream maintainer archived the
-project in 2024; fastfetch is the actively maintained, faster successor.
-(Confirm still current / available on Arch when this item starts, not
-assumed here.) OBLinux logo as ASCII art or an image-protocol logo —
-needs deciding once this item starts; Ptyxis's image-protocol support
-should be checked before assuming a raster logo renders cleanly, ASCII
-is the likely safe fallback. Benefits from the Nerd Font default already
-being decided (item 3) if the info display leans on glyph icons. Lives
-in the main `oblinux` repo (`airootfs/etc/fastfetch/`), no new repo.
+Both open questions from the original scoping resolved with real evidence
+before building anything:
+
+- **Fastfetch over neofetch** — confirmed, not assumed: neofetch really is
+  archived (github.com/dylanaraps/neofetch, "archived by the owner on Apr
+  26, 2024. It is now read-only"); fastfetch is current in Arch's `extra`
+  (2.67.1-1, updated within the same week this item was built).
+- **ASCII logo, not an image protocol** — confirmed Ptyxis genuinely can't
+  render one, not assumed. Traced this precisely: VTE (Ptyxis's underlying
+  terminal widget) has real Sixel support implemented (`sixel-context.cc`,
+  not a stub), but it's gated behind a meson build option that defaults to
+  `false` — and Arch's actual `vte4` PKGBUILD doesn't override it
+  (`arch-meson vte build -D docs=true`, no `-D sixel=true`). No Kitty
+  graphics protocol support either. So Ptyxis, built against this exact
+  package, cannot display a raster logo regardless of what OBLinux ships.
+
+**Logo design**: the ring+spark mark (not the wordmark), block-character
+ASCII (Unicode `█`, not plain `#` — bolder, matches the brand's clean
+geometric style), colored via fastfetch's real `$1`/`$2`/`#RRGGBB`
+placeholder mechanism (verified against fastfetch's own wiki —
+Color-Format-Specification page confirms `#RRGGBB` hex support since
+v2.42.0, well before the shipped 2.67.1) — Slate `#3f6690` for the ring,
+Amber `#d68a3c` for the spark, exact brand hexes, not an approximated
+named ANSI color. Iterated twice on a live color preview before landing
+on the final version (spark enlarged from a single character to a 2×2
+block — more proportionate to the ring and more visible).
+
+**Module list**: short and curated, matching the package-list phase's
+"deliberate defaults, not an overwhelming dump" philosophy — title, os,
+kernel, uptime, packages, shell, terminal, cpu, gpu, memory, colors.
+Dropped vs. the traditional neofetch-style full set: resolution, DE, WM,
+GTK/icon theme, terminal font — all either GNOME-specific and unchanging
+on OBLinux (always the same desktop, so "DE: GNOME" adds nothing fetch to
+fetch) or genuinely niche.
+
+**Implementation**:
+- `fastfetch` added to `packages.x86_64`.
+- `airootfs/etc/xdg/fastfetch/config.jsonc` + `oblinux-mark.txt` — system
+  data dir, not `/etc/fastfetch/` as originally assumed in this doc's
+  first draft. Verified the real search path directly in fastfetch's own
+  source (`src/common/impl/FFPlatform_unix.c`'s `getConfigDirs()`):
+  `$XDG_CONFIG_HOME` → `$XDG_CONFIG_DIRS` → `/etc/xdg/` → `/etc/` →
+  install sysconfdir. `/etc/xdg/fastfetch/` applies to `liveuser` and any
+  Calamares-created account automatically, same pattern as the icon theme
+  and Shell theme — no per-user seeding into `/etc/skel/` needed.
+- Runs automatically on new interactive shells — added to both
+  `airootfs/home/liveuser/.zshrc` and `airootfs/etc/skel/.zshrc`
+  (`[[ $- == *i* ]] && command -v fastfetch &>/dev/null && fastfetch`),
+  guarded against non-interactive invocations.
+
+**Next**: build/boot verification — confirm the logo renders correctly
+(color placeholders resolve, block characters don't come out as `?`/mojibake)
+and the module list looks right on the actual shipped `fastfetch` version.
 
 ### 7. Zsh custom prompt — not started
 

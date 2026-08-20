@@ -240,6 +240,13 @@ unzip
 wget
 zip
 
+## OBLinux: terminal branding (THEMING.md item 6). fastfetch over
+## neofetch — neofetch's upstream maintainer archived that project in
+## April 2024; fastfetch is the actively maintained, faster successor
+## (confirmed current on Arch: 2.67.1, updated within the same week this
+## was added). Config/logo: airootfs/etc/xdg/fastfetch/.
+fastfetch
+
 ## Codecs — full gst-plugins set (not Fedora's conservative subset), so
 ## common audio/video formats just work after install.
 gst-libav

@@ -11,3 +11,9 @@
 # out of scope for this phase (see README's phase 3/4 notes).
 
 autoload -Uz compinit && compinit
+
+# THEMING.md item 6: branded system-info banner on new interactive shells.
+# Guarded so non-interactive invocations (scripts, command substitution)
+# don't get it. Config/logo: /etc/xdg/fastfetch/ (system-wide, see that
+# directory's config.jsonc for why no per-user copy is needed).
+[[ $- == *i* ]] && command -v fastfetch &>/dev/null && fastfetch
