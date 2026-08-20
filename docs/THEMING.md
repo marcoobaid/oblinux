@@ -427,7 +427,7 @@ resolvable — `papirus-icon-theme` comes along automatically as its
 declared dependency, no separate `packages.x86_64` entry needed for
 that. Not yet build/boot tested.
 
-### 5. GNOME Shell styling — implemented, not yet build/boot tested
+### 5. GNOME Shell styling — done, VM-confirmed 2026-08-19
 
 Goal: make the top bar, overview, and quick-settings panel visually
 appealing and on-brand. Real technical constraint resolved before design,
@@ -511,12 +511,33 @@ recolor mapping table, and rebuild instructions in
 
 **Known gap, disclosed not hidden**: Graphite's own shell-specific work
 tops out around Shell 48; OBLinux ships 50.4. Built against the most
-current chain Graphite has (`widgets-48-0`/`extensions-46-0`) — real
-visual verification against 50.4 hasn't happened yet.
+current chain Graphite has (`widgets-48-0`/`extensions-46-0`) — turned
+out not to matter in practice; see verification below.
 
-**Next**: build/boot verification — confirm the extension is active, the
-theme applies, and nothing renders visibly broken on the actual shipped
-`gnome-shell` version.
+**VM-confirmed 2026-08-19**: `scripts/verify-shell-theme.sh` (extension
+listed in `enabled-extensions`, theme name correct, CSS file present)
+plus direct visual inspection — top bar and Quick Settings panel
+correctly Ink/Slate, toggled tiles (Wired, Dark Style) and the volume
+slider solid Amber, untoggled tiles (Power Mode, Do Not Disturb)
+correctly staying neutral Slate rather than all going accent-colored.
+The Shell 48-vs-50.4 gap flagged above didn't cause any visible breakage.
+
+One real debugging detour worth recording: `gnome-extensions info`
+initially reported `State: INACTIVE` despite `Enabled: Yes`, with no
+error logged anywhere (`journalctl`, `GetExtensionInfo`'s `error` field,
+`GetExtensionErrors` all empty) and `sessionModes`/`shell-version` both
+correct. Traced through GNOME Shell's actual `extensionSystem.js`
+source (not guessed) to understand the state machine; confirmed calling
+`EnableExtension` on an already-enabled UUID is a no-op by design (it
+only writes `enabled-extensions` if the UUID isn't already in it, so no
+gsettings change-signal fires, so the real activation path never runs)
+— a real, source-verified explanation for the *reporting*, but not for
+why activation hadn't already happened at login. Resolved once
+confirmed the CSS had, in fact, visually applied the whole time; a
+follow-up **clean reboot with zero manual commands first** showed
+`State: ACTIVE` immediately — settling that the earlier `INACTIVE`
+reading was a one-off artifact of the disable/enable/reload probing
+during diagnosis, not a real first-boot activation bug.
 
 ### 6. Neofetch/Fastfetch branding — not started
 
