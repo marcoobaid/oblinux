@@ -595,10 +595,49 @@ fetch) or genuinely niche.
 (color placeholders resolve, block characters don't come out as `?`/mojibake)
 and the module list looks right on the actual shipped `fastfetch` version.
 
-### 7. Zsh custom prompt — not started
+### 7. Zsh custom prompt — implemented, not yet build/boot tested
 
-Custom `starship.toml` matching Slate & Amber, using JetBrains Mono
-Nerd Font's glyph set for prompt icons (item 3's default). Lives in the
-main `oblinux` repo (likely `airootfs/etc/skel/.config/starship.toml`),
-no new repo. Sequenced last — pure terminal/CLI polish, dependent on the
-font decision above but nothing else.
+Real gap found before building anything: `starship` was already in
+`packages.x86_64` (added during the package-list phase) but never
+actually wired up — no `starship init` line in either `.zshrc`, no
+config, still a plain hardcoded `PS1` in `liveuser`'s. Fixed as part of
+this item.
+
+**Config location**: `airootfs/etc/xdg/starship.toml`, one shared file,
+pointed at via `$STARSHIP_CONFIG` (exported in both `.zshrc`s) rather
+than a per-user `~/.config/starship.toml` copy in each of
+`airootfs/home/liveuser/` and `airootfs/etc/skel/` (this doc's original
+assumption). Checked Starship's real config resolution in its own source
+(`src/context/mod.rs`'s `get_config_path_os()`): only `$STARSHIP_CONFIG`
+or `~/.config/starship.toml` — no XDG system-config fallback like
+fastfetch has. A single shared file avoids two copies drifting out of
+sync.
+
+**Design**: Slate & Amber, no powerline blocks — colored text/glyphs
+directly on the terminal background, matching the minimal geometric look
+already established (wallpaper, icon theme, Shell theme). Directory in
+Slate Light, git branch/status and language-version modules (Python,
+Node, Rust, Go — invisible unless the directory's actually relevant) in
+Slate/Amber, command duration on slow commands in muted Slate Light,
+prompt character Amber on success. Deliberately kept **red** for the
+error state rather than forcing it onto the brand palette — errors need
+instant, unambiguous recognition, worth more there than strict on-brand
+consistency. Iterated on a live two-state preview (clean repo, and a
+slow/failed command) before finalizing.
+
+No hand-specified Nerd Font glyph codepoints anywhere in the config —
+relies entirely on Starship's own built-in default symbol per module,
+avoiding the mojibake risk of guessing Unicode values from memory (same
+caution as the fastfetch logo's block characters).
+
+**Implementation**:
+- `airootfs/etc/xdg/starship.toml` — validated as syntactically correct
+  TOML before shipping.
+- Both `.zshrc`s: `export STARSHIP_CONFIG=/etc/xdg/starship.toml` +
+  `eval "$(starship init zsh)"`. `liveuser`'s old hardcoded `PS1` line
+  removed — Starship now owns prompt rendering entirely.
+
+**Next**: build/boot verification — confirm the prompt actually renders
+(not just that `starship init` doesn't error), glyphs show correctly
+rather than as boxes/`?`, and colors look right against Ptyxis's Ink
+background.

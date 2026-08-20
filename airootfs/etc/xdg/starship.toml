@@ -1,0 +1,66 @@
+# OBLinux Starship prompt (docs/THEMING.md item 7).
+#
+# Slate & Amber, relying entirely on Starship's own built-in Nerd Font
+# glyphs per module (JetBrains Mono Nerd Font Mono is the shipped default,
+# item 3) rather than hand-specifying Unicode codepoints here -- avoids
+# the mojibake risk of guessing symbol values from memory. Only colors,
+# format, and module selection are set below.
+#
+# Clean/minimal style: colored text and glyphs directly on the terminal
+# background, no powerline blocks -- matches the project's established
+# minimal geometric aesthetic (wallpaper, icon theme, Shell theme all
+# avoid busy/segmented looks).
+#
+# System-wide via $STARSHIP_CONFIG (exported in both
+# airootfs/home/liveuser/.zshrc and airootfs/etc/skel/.zshrc) rather than
+# a per-user file -- Starship has no XDG system-config fallback of its
+# own (verified against its real source, src/context/mod.rs's
+# get_config_path_os(): only $STARSHIP_CONFIG or ~/.config/starship.toml),
+# unlike fastfetch's /etc/xdg/ support. One shared file avoids the
+# liveuser/skel copies drifting out of sync.
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$python\
+$nodejs\
+$rust\
+$golang\
+$cmd_duration\
+$line_break\
+$character"""
+
+[directory]
+style = "bold fg:#a9b8c8"
+truncation_length = 3
+truncate_to_repo = true
+
+[git_branch]
+style = "fg:#3f6690"
+
+[git_status]
+style = "fg:#d68a3c"
+
+[python]
+style = "fg:#3f6690"
+
+[nodejs]
+style = "fg:#3f6690"
+
+[rust]
+style = "fg:#3f6690"
+
+[golang]
+style = "fg:#3f6690"
+
+[cmd_duration]
+min_time = 5000
+style = "fg:#a9b8c899"
+format = "took [$duration]($style) "
+
+[character]
+success_symbol = "[❯](bold fg:#d68a3c)"
+error_symbol = "[❯](bold fg:#e2504f)"

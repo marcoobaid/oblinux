@@ -5,12 +5,17 @@
 # `useradd -m` populates a new user's home directory from /etc/skel, not
 # from liveuser's home — without a file here, a new user's login shell
 # being zsh (users.conf: user.shell) would trigger zsh's interactive
-# first-run configuration wizard instead of a working shell. This is
-# deliberately minimal, not the live session's branded prompt: an
-# OBLinux-themed prompt for installed systems is theming/ricing work,
-# out of scope for this phase (see README's phase 3/4 notes).
+# first-run configuration wizard instead of a working shell.
 
 autoload -Uz compinit && compinit
+
+# THEMING.md item 7: branded Slate & Amber prompt. $STARSHIP_CONFIG
+# points at the one shared, system-wide config
+# (airootfs/etc/xdg/starship.toml) rather than a per-user copy — see
+# that file's own comment for why (Starship has no XDG system-config
+# fallback of its own, unlike fastfetch).
+export STARSHIP_CONFIG=/etc/xdg/starship.toml
+eval "$(starship init zsh)"
 
 # THEMING.md item 6: branded system-info banner on new interactive shells.
 # Guarded so non-interactive invocations (scripts, command substitution)
