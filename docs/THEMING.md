@@ -539,7 +539,7 @@ follow-up **clean reboot with zero manual commands first** showed
 reading was a one-off artifact of the disable/enable/reload probing
 during diagnosis, not a real first-boot activation bug.
 
-### 6. Neofetch/Fastfetch branding — implemented, not yet build/boot tested
+### 6. Neofetch/Fastfetch branding — done, VM-confirmed 2026-08-20
 
 Both open questions from the original scoping resolved with real evidence
 before building anything:
@@ -591,11 +591,11 @@ fetch) or genuinely niche.
   (`[[ $- == *i* ]] && command -v fastfetch &>/dev/null && fastfetch`),
   guarded against non-interactive invocations.
 
-**Next**: build/boot verification — confirm the logo renders correctly
-(color placeholders resolve, block characters don't come out as `?`/mojibake)
-and the module list looks right on the actual shipped `fastfetch` version.
+**VM-confirmed 2026-08-20**: pulled, built, installed — fastfetch runs on
+new interactive shells as designed, logo and module list render
+correctly.
 
-### 7. Zsh custom prompt — implemented, not yet build/boot tested
+### 7. Zsh custom prompt — done, VM-confirmed 2026-08-20
 
 Real gap found before building anything: `starship` was already in
 `packages.x86_64` (added during the package-list phase) but never
@@ -637,7 +637,5 @@ caution as the fastfetch logo's block characters).
   `eval "$(starship init zsh)"`. `liveuser`'s old hardcoded `PS1` line
   removed — Starship now owns prompt rendering entirely.
 
-**Next**: build/boot verification — confirm the prompt actually renders
-(not just that `starship init` doesn't error), glyphs show correctly
-rather than as boxes/`?`, and colors look right against Ptyxis's Ink
-background.
+**VM-confirmed 2026-08-20**: pulled, built, installed — the prompt is
+live and rendering correctly, replacing the old plain `PS1`.
