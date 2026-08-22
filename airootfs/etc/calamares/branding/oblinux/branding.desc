@@ -6,10 +6,11 @@
 # schema, which uses SidebarBackground/SidebarText/SidebarTextCurrent/
 # SidebarBackgroundCurrent instead.
 #
-# Slideshow is deliberately a single static image, not QML — matches the
-# "minimal branded single panel" scope already decided for this phase
-# (no feature-showcase content exists yet to put in a multi-slide
-# walkthrough).
+# Slideshow is a real QML presentation (show.qml) as of docs/CALAMARES.md
+# phase 3/4 item 3 -- superseding the earlier single-static-image
+# placeholder from when "no feature-showcase content exists yet" was the
+# blocker. Structure/API verified verbatim against Calamares' own
+# reference slideshow (src/branding/default/show.qml).
 ---
 componentName:  oblinux
 
@@ -54,4 +55,10 @@ style:
    SidebarTextCurrent:       "#f2f3f5"
    SidebarBackgroundCurrent: "#3f6690"
 
-slideshow: [ "logo.png" ]
+# QML (recommended) over a static image list — a real multi-slide
+# presentation, not the single-image placeholder this replaces. API 2
+# loads the show on startup and calls onActivate()/onLeave(), which
+# properly stops the presentation once installation finishes (verified
+# against Calamares' own branding.desc documentation of the two APIs).
+slideshow:    "show.qml"
+slideshowAPI: 2

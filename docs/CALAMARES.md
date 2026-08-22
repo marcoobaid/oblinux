@@ -124,11 +124,23 @@ no-ops, not worth the cleanup).
 ## Branding — status
 
 Real OBLinux assets (mark, Slate & Amber palette) are already wired in —
-this wasn't left as generic Calamares placeholder branding, since the
-"minimal branded single panel" scope was already decided and the assets
-already existed. Slideshow is a single static image
-(`slideshow: [ "logo.png" ]`), not QML — matches that same decision, no
-feature-showcase content exists yet to justify a multi-slide walkthrough.
+this wasn't left as generic Calamares placeholder branding.
+
+**Slideshow (2026-08-20, phase 3/4 item 3)**: upgraded from the earlier
+single-static-image placeholder to a real multi-slide QML presentation
+(`airootfs/etc/calamares/branding/oblinux/show.qml`, `slideshowAPI: 2`).
+Structure verified verbatim against Calamares' own reference slideshow
+(`src/branding/default/show.qml`) — `Presentation`/`Slide` elements, a
+`Timer` driving `goToNextSlide()`, `onActivate()`/`onLeave()` for proper
+start/stop when the execution step ends.
+
+First-draft content: 5 slides (welcome, desktop, terminal, packages,
+"almost there"), each reusing the existing mark (`logo.png`) with a
+Slate & Amber background drawn explicitly per-slide, rather than new
+custom icons or real screenshots. Deliberately a first pass to react to
+before investing further — real screenshots of the actual desktop/
+terminal are a likely upgrade once there's a stable look to capture,
+and/or bespoke per-slide icons matching the mark's visual language.
 
 ## Build/install testing
 
